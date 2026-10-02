@@ -1,0 +1,33 @@
+{
+  "slug": "mi-perfil",
+  "fullName": "",
+  "headline": "",
+  "email": "",
+  "phone": "",
+  "location": "",
+  "about": "",
+  "urls": [],
+  "skills": {
+    "languages": [],
+    "frameworks": [],
+    "databases": [],
+    "cloudDevOps": [],
+    "toolsMethods": [],
+    "hardwareRealtime": [],
+    "technicalCompetencies": [],
+    "softwareTools": [],
+    "standardsRegulations": [],
+    "managementOperations": []
+  },
+  "experience": [],
+  "projects": [],
+  "education": [],
+  "certifications": [],
+  "preferences": {
+    "targetRoles": [],
+    "workModality": "",
+    "salaryExpectation": ""
+  },
+  "rawDocumentsSummary": "",
+  "updatedAt": "2026-10-02T06:24:14.894Z"
+}

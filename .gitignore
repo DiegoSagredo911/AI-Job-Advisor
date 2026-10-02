@@ -1,0 +1,43 @@
+# dependencies
+/node_modules
+node_modules/
+node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js (archivos de compilación y caché de Next.js)
+/.next/
+.next/
+.next
+/out/
+out/
+
+# production
+/build
+build/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files (claves y secretos privados)
+.env*.local
+.env
+!.env.example
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# User private documents & local session memory
+data/profiles/*/documents/*
+!data/profiles/*/documents/.gitkeep
+data/profiles/*/memory_state.json
