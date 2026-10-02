@@ -119,12 +119,12 @@ export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
       }}
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-700 bg-slate-900 p-6 sm:p-8 shadow-2xl text-slate-100 font-sans space-y-6">
+      <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl border border-slate-700 bg-slate-900 p-4 sm:p-8 shadow-2xl text-slate-100 font-sans space-y-5 sm:space-y-6 min-w-0 overflow-x-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
           disabled={isSubmitting}
-          className="absolute top-5 right-5 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors"
+          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
@@ -135,7 +135,7 @@ export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
             <UserPlus className="w-3.5 h-3.5" />
             <span>Configuración Rápida para Nuevo Usuario</span>
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight pr-10 break-words">
             Cargar Mi Perfil de Postulaciones
           </h2>
           <p className="text-xs sm:text-sm text-slate-400">
@@ -217,21 +217,21 @@ export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
                 placeholder="LinkedIn URL"
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                className="w-full min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
               <input
                 type="url"
                 placeholder="Portafolio / Web"
                 value={portfolioUrl}
                 onChange={(e) => setPortfolioUrl(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                className="w-full min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
               <input
                 type="url"
                 placeholder="GitHub URL"
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                className="w-full min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -259,19 +259,19 @@ export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
           )}
 
           {/* Actions */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-800">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors text-center"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={!fullName.trim() || isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-600/30"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/30"
             >
               {isSubmitting ? (
                 <>

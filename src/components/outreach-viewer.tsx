@@ -18,10 +18,10 @@ export function OutreachViewer({ outreach }: OutreachViewerProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0 overflow-hidden">
       {/* 1. LinkedIn Connection Note */}
-      <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-3 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
             <Send className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-bold text-white">
@@ -50,14 +50,14 @@ export function OutreachViewer({ outreach }: OutreachViewerProps) {
             </button>
           </div>
         </div>
-        <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
+        <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap break-words [word-break:break-word] overflow-hidden">
           {outreach.linkedInConnectionNote}
         </div>
       </div>
 
       {/* 2. InMail / Cold Pitch to Hiring Manager */}
-      <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-3 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-indigo-400" />
             <h3 className="text-sm font-bold text-white">
@@ -81,14 +81,14 @@ export function OutreachViewer({ outreach }: OutreachViewerProps) {
             )}
           </button>
         </div>
-        <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
+        <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap break-words [word-break:break-word] overflow-hidden">
           {outreach.linkedInInMailMessage}
         </div>
       </div>
 
       {/* 3. Formal Cover Letter */}
-      <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-3 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-emerald-400" />
             <h3 className="text-sm font-bold text-white">
@@ -112,7 +112,7 @@ export function OutreachViewer({ outreach }: OutreachViewerProps) {
             )}
           </button>
         </div>
-        <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
+        <div className="p-3.5 sm:p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap break-words [word-break:break-word] overflow-hidden">
           {outreach.emailCoverLetter}
         </div>
       </div>

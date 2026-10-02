@@ -440,96 +440,122 @@ export function MockInterview({
   };
 
   return (
-    <div className="flex flex-col h-[700px] rounded-3xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-[calc(100dvh-200px)] sm:h-[700px] rounded-2xl sm:rounded-3xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-2xl w-full max-w-full min-w-0">
       {/* Header */}
-      <div className="p-4 border-b border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-            <Bot className="w-4 h-4" />
+      <div className="p-3 sm:p-4 border-b border-slate-800 bg-slate-950/80 flex flex-col gap-2.5 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="flex items-center justify-between gap-2 w-full max-w-full min-w-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+            <div className="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shrink-0">
+              <Bot className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 min-w-0 truncate">
+                <span className="truncate">Simulador Entrevista</span>
+                <span className="hidden sm:inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] sm:text-[10px] font-semibold shrink-0">
+                  <Radio className="w-2 sm:w-2.5 h-2 sm:h-2.5 animate-pulse" /> Memoria Activa
+                </span>
+                <span className="sm:hidden w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" title="Memoria Activa" />
+              </h3>
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                Perfil: <strong className="text-slate-200">{activeProfile?.fullName || "Tu Perfil"}</strong>
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <span>Simulador de Entrevista por Voz & Texto</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold">
-                <Radio className="w-2.5 h-2.5 animate-pulse" /> Memoria Contextual Activa
-              </span>
-            </h3>
-            <p className="text-[11px] text-slate-400">
-              Perfil evaluado: <strong className="text-slate-200">{activeProfile?.fullName || "Tu Perfil"}</strong>
-            </p>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isSpeaking && (
+              <button
+                type="button"
+                onClick={stopSpeaking}
+                title="Detener audio en reproducción"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg border border-rose-500/40 bg-rose-500/20 text-rose-300 text-xs animate-pulse transition-colors"
+              >
+                <VolumeX className="w-3 h-3" />
+                <span className="hidden sm:inline">Silenciar</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleResetInterview}
+              title="Reiniciar conversación y comenzar nueva entrevista"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline">Reiniciar</span>
+            </button>
           </div>
         </div>
 
-        {/* Toolbar: Selector de Idioma + Modo de Audio + Reset */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Toolbar deslizable en móvil para máxima accesibilidad con el pulgar */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 w-full max-w-full min-w-0">
           {/* Selector de Idioma (ES / EN) */}
-          <div className="flex items-center rounded-xl bg-slate-900 p-0.5 border border-slate-800 text-xs font-semibold">
+          <div className="flex items-center rounded-xl bg-slate-900 p-0.5 border border-slate-800 text-xs font-semibold shrink-0">
             <button
               type="button"
               onClick={() => handleToggleLanguage("es")}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
                 interviewLanguage === "es"
                   ? "bg-emerald-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
-              title="Simulación en Español (Reconocimiento de voz es-ES)"
+              title="Simulación en Español (Reconocimiento es-ES)"
             >
               <span>🇪🇸</span>
-              <span className="hidden sm:inline">Español</span>
+              <span className="text-[11px] sm:text-xs">ES</span>
             </button>
             <button
               type="button"
               onClick={() => handleToggleLanguage("en")}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
                 interviewLanguage === "en"
                   ? "bg-blue-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
-              title="Interview in English (Speech recognition en-US & English TTS)"
+              title="Interview in English (Speech recognition en-US)"
             >
               <span>🇺🇸</span>
-              <span className="hidden sm:inline">English</span>
+              <span className="text-[11px] sm:text-xs">EN</span>
             </button>
           </div>
 
-          {/* Selector de Modo de Feedback (Bajo Demanda con Botón vs Automático) */}
-          <div className="flex items-center rounded-xl bg-slate-900 p-0.5 border border-slate-800 text-xs font-semibold">
+          {/* Selector de Modo de Feedback */}
+          <div className="flex items-center rounded-xl bg-slate-900 p-0.5 border border-slate-800 text-xs font-semibold shrink-0">
             <button
               type="button"
               onClick={() => setFeedbackViewMode("on_demand")}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg transition-all text-[11px] sm:text-xs ${
                 feedbackViewMode === "on_demand"
                   ? "bg-slate-800 text-indigo-300 shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
-              title="Modo Botón: El feedback y nota se consultan haciendo clic en cada respuesta"
+              title="Feedback bajo demanda con botón"
             >
               🎯 Con Botón
             </button>
             <button
               type="button"
               onClick={() => setFeedbackViewMode("instant")}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg transition-all text-[11px] sm:text-xs ${
                 feedbackViewMode === "instant"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
-              title="Modo Automático: El feedback se despliega automáticamente en cada turno"
+              title="Feedback automático en cada respuesta"
             >
               💡 Automático
             </button>
           </div>
 
-          {/* Selector de Modo de Audio: Solo Chat | Voz Local (0 Tokens) | Voz Gemini (IA) */}
-          <div className="inline-flex rounded-xl p-0.5 bg-slate-900 border border-slate-800 text-xs">
+          {/* Selector de Modo de Audio */}
+          <div className="inline-flex rounded-xl p-0.5 bg-slate-900 border border-slate-800 text-xs shrink-0">
             <button
               type="button"
               onClick={() => {
                 stopSpeaking();
                 setVoiceMode("chat_only");
               }}
-              title="Solo Chat: Sin emisión de audio por parlantes"
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg font-medium transition-all text-[11px] sm:text-xs ${
                 voiceMode === "chat_only"
                   ? "bg-slate-800 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -543,14 +569,13 @@ export function MockInterview({
                 stopSpeaking();
                 setVoiceMode("browser_tts");
               }}
-              title="Voz Local del Navegador: 0 Tokens consumidos, sin costo de API"
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg font-medium transition-all text-[11px] sm:text-xs ${
                 voiceMode === "browser_tts"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              🔊 Voz Local (0 Tokens)
+              🔊 Voz Local
             </button>
             <button
               type="button"
@@ -558,86 +583,62 @@ export function MockInterview({
                 stopSpeaking();
                 setVoiceMode("gemini_tts");
               }}
-              title="Voz Oficial de Google Gemini: Síntesis de IA hiperrealista"
-              className={`px-2.5 py-1 rounded-lg font-medium flex items-center gap-1 transition-all ${
+              className={`px-2 sm:px-2.5 py-1 rounded-lg font-medium flex items-center gap-1 transition-all text-[11px] sm:text-xs ${
                 voiceMode === "gemini_tts"
                   ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm shadow-indigo-500/20"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <Sparkles className="w-3 h-3 text-amber-300" />
-              <span>Voz Gemini (IA)</span>
+              <span>Voz Gemini IA</span>
             </button>
           </div>
 
-          {/* Selector de Voz específica de Gemini */}
+          {/* Selector de Voz Gemini */}
           {voiceMode === "gemini_tts" && (
             <select
               value={geminiVoice}
               onChange={(e) => setGeminiVoice(e.target.value)}
-              className="bg-slate-900 border border-indigo-500/40 text-indigo-200 rounded-xl px-2.5 py-1 text-xs focus:outline-none focus:border-indigo-400"
-              title="Selecciona el timbre de voz de Gemini"
+              className="bg-slate-900 border border-indigo-500/40 text-indigo-200 rounded-xl px-2.5 py-1 text-xs focus:outline-none focus:border-indigo-400 shrink-0"
             >
-              <option value="Puck">Voz Puck (Masculina)</option>
-              <option value="Aoede">Voz Aoede (Femenina Cálida)</option>
-              <option value="Kore">Voz Kore (Femenina Firme)</option>
-              <option value="Charon">Voz Charon (Masculina Formal)</option>
+              <option value="Puck">Voz Puck (Masc)</option>
+              <option value="Aoede">Voz Aoede (Fem Cálida)</option>
+              <option value="Kore">Voz Kore (Fem Firme)</option>
+              <option value="Charon">Voz Charon (Masc Formal)</option>
               <option value="Fenrir">Voz Fenrir (Enérgica)</option>
               <option value="Zephyr">Voz Zephyr (Brillante)</option>
             </select>
           )}
 
-          {/* Botón de Parar Audio cuando esté sonando */}
-          {isSpeaking && (
-            <button
-              type="button"
-              onClick={stopSpeaking}
-              title="Detener audio en reproducción"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-rose-500/40 bg-rose-500/20 text-rose-300 text-xs animate-pulse transition-colors"
-            >
-              <VolumeX className="w-3 h-3" />
-              <span>Silenciar</span>
-            </button>
-          )}
-
           {isLoadingAudio && (
-            <span className="text-[11px] text-indigo-400 flex items-center gap-1 animate-pulse">
+            <span className="text-[11px] text-indigo-400 flex items-center gap-1 animate-pulse shrink-0">
               <Loader2 className="w-3 h-3 animate-spin" />
-              <span className="hidden sm:inline">Generando voz Gemini...</span>
+              <span>Voz IA...</span>
             </span>
           )}
 
-          <button
-            type="button"
-            onClick={handleResetInterview}
-            title="Reiniciar conversación y comenzar nueva entrevista"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
-            <span className="hidden sm:inline">Reiniciar</span>
-          </button>
-
+          {/* Contexto del puesto */}
           <input
             type="text"
             value={jobContext}
             onChange={(e) => setJobContext(e.target.value)}
-            placeholder="Contexto o puesto a evaluar..."
-            className="text-xs bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-blue-500 max-w-xs"
+            placeholder="Puesto o contexto a evaluar..."
+            className="text-xs bg-slate-900 border border-slate-700 rounded-xl px-3 py-1 text-slate-200 focus:outline-none focus:border-blue-500 min-w-[180px] sm:w-64 shrink-0"
           />
         </div>
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 font-sans">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 space-y-4 sm:space-y-6 font-sans w-full max-w-full min-w-0">
         {messages.map((m) => {
           const isInterviewer = m.sender === "interviewer";
           return (
             <div
               key={m.id}
-              className={`flex flex-col ${isInterviewer ? "items-start" : "items-end"}`}
+              className={`flex flex-col w-full max-w-full min-w-0 ${isInterviewer ? "items-start" : "items-end"}`}
             >
               <div
-                className={`flex gap-3 max-w-2xl ${
+                className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-2xl min-w-0 ${
                   isInterviewer ? "flex-row" : "flex-row-reverse"
                 }`}
               >
@@ -652,7 +653,7 @@ export function MockInterview({
                 </div>
 
                 <div
-                  className={`p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                  className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed min-w-0 break-words [word-break:break-word] overflow-hidden ${
                     isInterviewer
                       ? "bg-slate-950 border border-slate-800 text-slate-200"
                       : "bg-blue-600 text-white shadow-md"
@@ -688,7 +689,7 @@ export function MockInterview({
 
               {/* Feedback del turno (Bajo Demanda con Botón o Automático) */}
               {m.feedback && (
-                <div className="mt-2.5 mr-11 max-w-xl flex flex-col items-end">
+                <div className="mt-2.5 mr-0 sm:mr-11 w-full max-w-full sm:max-w-xl flex flex-col items-end min-w-0">
                   <button
                     type="button"
                     onClick={() => toggleFeedback(m.id)}
@@ -711,7 +712,7 @@ export function MockInterview({
                   </button>
 
                   {(expandedFeedbackIds[m.id] ?? (feedbackViewMode === "instant")) && (
-                    <div className="mt-2.5 w-full p-4 rounded-2xl border border-indigo-900/50 bg-indigo-950/30 space-y-2.5 text-xs text-slate-200 shadow-lg animate-in fade-in duration-200">
+                    <div className="mt-2.5 w-full max-w-full p-3.5 sm:p-4 rounded-2xl border border-indigo-900/50 bg-indigo-950/30 space-y-2.5 text-xs text-slate-200 shadow-lg animate-in fade-in duration-200 min-w-0 overflow-hidden break-words">
                       <div className="flex items-center justify-between border-b border-indigo-900/40 pb-2">
                         <span className="font-bold text-indigo-400 flex items-center gap-1.5">
                           <Award className="w-3.5 h-3.5" />
@@ -749,7 +750,7 @@ export function MockInterview({
                       )}
 
                       {m.feedback.suggestedBetterAnswer && (
-                        <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/30 text-[11px] text-slate-300">
+                        <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/30 text-[11px] text-slate-300 break-words [word-break:break-word] overflow-hidden">
                           <span className="font-semibold text-indigo-300">Respuesta recomendada: </span>
                           {m.feedback.suggestedBetterAnswer}
                         </div>
@@ -788,7 +789,7 @@ export function MockInterview({
       {/* Input Form & Push-to-Talk Controls */}
       <form
         onSubmit={handleSubmit}
-        className="p-4 border-t border-slate-800 bg-slate-950/90 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
+        className="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/90 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full max-w-full min-w-0"
       >
         <textarea
           value={inputValue}
@@ -799,12 +800,12 @@ export function MockInterview({
               handleSubmit();
             }
           }}
-          placeholder="Escribe tu respuesta técnica o mantén presionado el botón del micrófono para hablar..."
+          placeholder="Escribe tu respuesta técnica o mantén presionado el micrófono para hablar..."
           rows={2}
-          className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+          className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
         />
 
-        <div className="flex items-center gap-2 shrink-0 justify-end">
+        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto min-w-0">
           {/* Push-to-Talk Button (MANTENER PRESIONADO PARA HABLAR) */}
           <button
             type="button"
@@ -812,13 +813,14 @@ export function MockInterview({
             onMouseUp={handleStopPushToTalk}
             onTouchStart={handleStartPushToTalk}
             onTouchEnd={handleStopPushToTalk}
+            onTouchCancel={handleStopPushToTalk}
             disabled={!speechRecognitionSupported}
             title={
               speechRecognitionSupported
                 ? "Mantén presionado para hablar (Push-to-Talk)"
                 : "Reconocimiento de voz no soportado en este navegador"
             }
-            className={`px-3.5 py-3 rounded-2xl font-semibold text-xs flex items-center gap-2 select-none transition-all shadow-md active:scale-95 disabled:opacity-40 ${
+            className={`flex-1 sm:flex-none justify-center px-3 sm:px-3.5 py-2.5 sm:py-3 rounded-2xl font-semibold text-xs flex items-center gap-1.5 sm:gap-2 select-none transition-all shadow-md active:scale-95 disabled:opacity-40 ${
               isListening
                 ? "bg-red-600 text-white ring-4 ring-red-500/30 animate-pulse"
                 : "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
@@ -827,12 +829,13 @@ export function MockInterview({
             {isListening ? (
               <>
                 <Mic className="w-4 h-4 text-white animate-bounce" />
-                <span className="font-bold">¡Soltar para enviar!</span>
+                <span className="font-bold">¡Soltar!</span>
               </>
             ) : (
               <>
                 <Mic className="w-4 h-4 text-blue-400" />
                 <span className="hidden sm:inline">Mantener para Hablar</span>
+                <span className="sm:hidden">Hablar</span>
               </>
             )}
           </button>
@@ -841,7 +844,7 @@ export function MockInterview({
           <button
             type="submit"
             disabled={!inputValue.trim() || isSending}
-            className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-2 transition-colors shadow-md shadow-blue-600/20"
+            className="flex-1 sm:flex-none justify-center px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-2 transition-colors shadow-md shadow-blue-600/20"
           >
             <Send className="w-4 h-4" />
             <span>Enviar</span>

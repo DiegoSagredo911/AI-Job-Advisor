@@ -137,7 +137,7 @@ Requisitos:
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 w-full max-w-full min-w-0 overflow-hidden">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
@@ -151,18 +151,18 @@ Requisitos:
       </div>
 
       {/* Input Section */}
-      <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4 shadow-xl">
+      <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4 shadow-xl w-full max-w-full min-w-0 overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <label className="text-xs font-bold text-white uppercase tracking-wider">
             Descripción de la Oferta de Empleo (LinkedIn, Get on Board, etc.)
           </label>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 text-[11px]">Ejemplos rápidos:</span>
+          <div className="flex items-center gap-1.5 text-xs overflow-x-auto no-scrollbar py-0.5 max-w-full min-w-0 w-full">
+            <span className="text-slate-500 text-[11px] shrink-0">Ejemplos:</span>
             {sampleJobs.map((sample, idx) => (
               <button
                 key={idx}
                 onClick={() => setJobText(sample.text)}
-                className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-blue-300 text-[11px] border border-slate-700 transition-colors"
+                className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-blue-300 text-[11px] border border-slate-700 transition-colors shrink-0"
               >
                 {sample.title.split("(")[0]}
               </button>
@@ -186,7 +186,7 @@ Requisitos:
           <button
             onClick={handleAnalyze}
             disabled={jobText.trim().length < 20 || isAnalyzing}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/30"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/30"
           >
             {isAnalyzing ? (
               <>
@@ -205,13 +205,13 @@ Requisitos:
 
       {/* Results Section with Tabs */}
       {analysis && (
-        <div className="space-y-6">
-          {/* Navigation Tabs */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
-            <div className="flex flex-wrap gap-2">
+        <div className="space-y-6 w-full max-w-full min-w-0 overflow-hidden">
+          {/* Navigation Tabs (Desplazables en móvil con swipe horizontal) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full max-w-full min-w-0">
               <button
                 onClick={() => setActiveTab("analysis")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
                   activeTab === "analysis"
                     ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                     : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
@@ -226,14 +226,14 @@ Requisitos:
                   setActiveTab("resume");
                   handleGenerateResume();
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
                   activeTab === "resume"
                     ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                     : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>CV Adaptado a la Medida</span>
+                <span>CV Adaptado</span>
               </button>
 
               <button
@@ -241,7 +241,7 @@ Requisitos:
                   setActiveTab("outreach");
                   handleGenerateOutreach();
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
                   activeTab === "outreach"
                     ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                     : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
@@ -253,7 +253,7 @@ Requisitos:
 
               <button
                 onClick={() => setActiveTab("interview")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
                   activeTab === "interview"
                     ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                     : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
@@ -265,7 +265,7 @@ Requisitos:
             </div>
 
             {savedAppId && (
-              <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+              <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Guardado en Mis Postulaciones</span>
               </div>
