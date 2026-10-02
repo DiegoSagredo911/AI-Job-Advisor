@@ -135,7 +135,7 @@ ${job.tags.join(", ")}`;
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 w-full max-w-full min-w-0 overflow-hidden">
       {/* Header */}
       <div className="space-y-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
@@ -152,7 +152,7 @@ ${job.tags.join(", ")}`;
       </div>
 
       {/* Search and Filters Box */}
-      <div className="p-6 rounded-3xl border border-slate-800 bg-slate-900/60 shadow-xl space-y-5">
+      <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-slate-900/60 shadow-xl space-y-4 sm:space-y-5 w-full max-w-full min-w-0 overflow-hidden">
         <form onSubmit={handleSearch} className="space-y-4">
           {/* Main search bar */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -181,9 +181,9 @@ ${job.tags.join(", ")}`;
             </button>
           </div>
 
-          {/* Quick pills */}
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[11px] text-slate-500 mr-1">Filtros rápidos:</span>
+          {/* Quick pills (Desplazables en móvil) */}
+          <div className="flex items-center gap-1.5 pt-1 overflow-x-auto no-scrollbar py-0.5 max-w-full min-w-0 w-full">
+            <span className="text-[11px] text-slate-500 mr-1 shrink-0">Filtros rápidos:</span>
             {sampleKeywords.map((kw, i) => (
               <button
                 key={i}
@@ -191,7 +191,7 @@ ${job.tags.join(", ")}`;
                 onClick={() => {
                   setQuery(kw);
                 }}
-                className={`text-[11px] px-2.5 py-0.5 rounded-lg border transition-colors ${
+                className={`text-[11px] px-2.5 py-0.5 rounded-lg border transition-colors shrink-0 whitespace-nowrap ${
                   query === kw
                     ? "bg-blue-600 text-white border-blue-500"
                     : "bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200"
@@ -307,7 +307,7 @@ ${job.tags.join(", ")}`;
 
       {/* External Live Search Links Bar */}
       {externalUrls.linkedIn && (
-        <div className="p-4 rounded-2xl border border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="p-3.5 sm:p-4 rounded-2xl border border-slate-800 bg-slate-950/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs w-full max-w-full min-w-0 overflow-hidden">
           <div className="text-slate-400 font-medium">
             ¿Quieres explorar más vacantes en vivo con estos mismos filtros?
           </div>
@@ -375,9 +375,9 @@ ${job.tags.join(", ")}`;
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6"
+                className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 w-full max-w-full min-w-0 overflow-hidden"
               >
-                <div className="space-y-3 max-w-3xl">
+                <div className="space-y-3 max-w-3xl min-w-0 flex-1">
                   {/* Company & Badges */}
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-blue-400">{job.company}</span>
@@ -399,10 +399,10 @@ ${job.tags.join(", ")}`;
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-white tracking-tight">{job.title}</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight break-words">{job.title}</h3>
 
                   {/* Description snippet */}
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed break-words">
                     {job.description.replace(/<[^>]*>?/gm, "")}
                   </p>
 
@@ -420,11 +420,11 @@ ${job.tags.join(", ")}`;
                 </div>
 
                 {/* Actions: Analyze with AI & Direct Link */}
-                <div className="flex md:flex-col items-center md:items-end gap-2.5 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-800">
+                <div className="flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-end gap-2.5 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-800 w-full md:w-auto">
                   <button
                     onClick={() => handleAnalyzeJob(job)}
                     disabled={analyzingJobId === job.id}
-                    className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/25"
+                    className="w-full sm:w-auto md:w-44 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/25"
                   >
                     {analyzingJobId === job.id ? (
                       <>
@@ -443,7 +443,7 @@ ${job.tags.join(", ")}`;
                     href={job.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-300 text-xs font-medium transition-colors"
+                    className="w-full sm:w-auto md:w-44 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-300 text-xs font-medium transition-colors"
                   >
                     <span>Ver Publicación</span>
                     <ExternalLink className="w-3 h-3 text-slate-500" />

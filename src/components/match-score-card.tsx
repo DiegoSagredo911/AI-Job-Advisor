@@ -40,8 +40,8 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
   return (
     <div className="space-y-6">
       {/* Top Banner: Score & Summary */}
-      <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-2 max-w-2xl">
+      <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 w-full max-w-full min-w-0 overflow-hidden">
+        <div className="space-y-2 max-w-2xl min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-950/60 text-blue-400 border border-blue-800/40">
               {analysis.seniorityLevel}
@@ -63,18 +63,18 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
               </span>
             )}
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
             {analysis.jobTitle}
           </h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed break-words">
             {analysis.fitSummary}
           </p>
         </div>
 
         {/* Circular / Badge Score */}
-        <div className={`p-4 rounded-2xl border text-center shrink-0 w-full md:w-36 ${getScoreColor(score)}`}>
-          <div className="text-4xl font-extrabold tracking-tight">{score}%</div>
-          <div className="text-xs font-medium uppercase tracking-wider mt-1 text-slate-400">
+        <div className={`p-3.5 sm:p-4 rounded-2xl border shrink-0 w-full md:w-36 flex md:flex-col items-center justify-between md:justify-center ${getScoreColor(score)}`}>
+          <div className="text-3xl sm:text-4xl font-extrabold tracking-tight">{score}%</div>
+          <div className="text-xs font-semibold uppercase tracking-wider md:mt-1 text-slate-400">
             Calce Técnico
           </div>
         </div>
@@ -154,7 +154,7 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
             {analysis.atsKeywords.criticalMatches?.map((kw, i) => (
               <span
                 key={"m-" + i}
-                className="text-xs px-2.5 py-1 rounded-md bg-emerald-950/60 border border-emerald-800/40 text-emerald-300"
+                className="text-xs px-2.5 py-1 rounded-md bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 break-words max-w-full"
               >
                 ✓ {kw}
               </span>
@@ -162,7 +162,7 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
             {analysis.atsKeywords.suggestedAdditions?.map((kw, i) => (
               <span
                 key={"a-" + i}
-                className="text-xs px-2.5 py-1 rounded-md bg-blue-950/60 border border-blue-800/40 text-blue-300"
+                className="text-xs px-2.5 py-1 rounded-md bg-blue-950/60 border border-blue-800/40 text-blue-300 break-words max-w-full"
               >
                 + Sugerido: {kw}
               </span>
@@ -201,7 +201,7 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
 
       {/* Reverse Interview: Strategic Questions for the Candidate to Ask */}
       {analysis.reverseInterviewQuestions && analysis.reverseInterviewQuestions.length > 0 && (
-        <div className="p-6 rounded-2xl border border-purple-900/40 bg-purple-950/10 space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl border border-purple-900/40 bg-purple-950/10 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h3 className="text-base font-bold text-purple-300 flex items-center gap-2">
               <HelpCircle className="w-5 h-5 text-purple-400" />
@@ -227,9 +227,9 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
               return (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2.5 hover:border-purple-800/40 transition-colors"
+                  className="p-3.5 sm:p-4 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2.5 hover:border-purple-800/40 transition-colors min-w-0 overflow-hidden break-words"
                 >
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5">
                     <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${categoryBadge.color}`}>
                       {categoryBadge.label}
                     </span>
@@ -252,7 +252,7 @@ export function MatchScoreCard({ analysis }: MatchScoreCardProps) {
                     </button>
                   </div>
 
-                  <p className="text-sm font-semibold text-slate-100 italic">
+                  <p className="text-xs sm:text-sm font-semibold text-slate-100 italic break-words">
                     "{q.question}"
                   </p>
 

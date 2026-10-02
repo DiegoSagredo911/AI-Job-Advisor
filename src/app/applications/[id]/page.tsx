@@ -133,7 +133,7 @@ export default function ApplicationDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0 overflow-hidden">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div className="flex items-center gap-3">
@@ -145,7 +145,7 @@ export default function ApplicationDetailPage({ params }: PageProps) {
           </Link>
           <div>
             <div className="text-xs text-blue-400 font-semibold">{app.companyName}</div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
               {app.jobTitle}
             </h1>
           </div>
@@ -177,13 +177,13 @@ export default function ApplicationDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+      {/* Tabs (Desplazables en móvil) */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-slate-800 w-full max-w-full min-w-0">
         <button
           onClick={() => setActiveTab("analysis")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
             activeTab === "analysis"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
               : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
           }`}
         >
@@ -196,9 +196,9 @@ export default function ApplicationDetailPage({ params }: PageProps) {
             setActiveTab("resume");
             handleGenerateResume();
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
             activeTab === "resume"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
               : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
           }`}
         >
@@ -211,9 +211,9 @@ export default function ApplicationDetailPage({ params }: PageProps) {
             setActiveTab("outreach");
             handleGenerateOutreach();
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
             activeTab === "outreach"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
               : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
           }`}
         >
@@ -223,9 +223,9 @@ export default function ApplicationDetailPage({ params }: PageProps) {
 
         <button
           onClick={() => setActiveTab("interview")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-colors shrink-0 whitespace-nowrap ${
             activeTab === "interview"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
               : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
           }`}
         >

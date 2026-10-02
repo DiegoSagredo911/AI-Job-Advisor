@@ -207,7 +207,7 @@ export default function ProfilesPage() {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-10 w-full max-w-full min-w-0 overflow-hidden">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
         <div className="space-y-1">
@@ -237,7 +237,7 @@ export default function ProfilesPage() {
       {/* Reset Notification Banner */}
       {resetNotice && (
         <div className="p-4 rounded-xl border border-emerald-500/40 bg-emerald-950/40 text-emerald-200 text-xs flex items-center justify-between gap-3 shadow-lg animate-in fade-in">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
             <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
             <span className="font-medium leading-relaxed">{resetNotice}</span>
           </div>
@@ -253,14 +253,14 @@ export default function ProfilesPage() {
       {/* Grid: Profile Master View & Ingestion Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Documents & URLs Ingestion (2 cols) */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8 w-full max-w-full min-w-0 overflow-hidden">
           {/* Section 1: Documents Folder Ingestion */}
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4 sm:space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
               <div>
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <FolderOpen className="w-5 h-5 text-indigo-400" />
-                  <span>Documentos de Experiencia (CV, Certificados, Notas)</span>
+                  <FolderOpen className="w-5 h-5 text-indigo-400 shrink-0" />
+                  <span>Documentos de Experiencia (CV, Certificados)</span>
                 </h2>
                 <p className="text-xs text-slate-400">
                   Formatos admitidos: PDF, Word (.docx), Markdown (.md) o texto plano (.txt)
@@ -268,9 +268,9 @@ export default function ProfilesPage() {
               </div>
 
               {/* Upload Input */}
-              <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors">
+              <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shrink-0">
                 <Upload className="w-3.5 h-3.5" />
-                <span>{isUploading ? "Subiendo..." : "Subir Archivo (PDF, Word, TXT)"}</span>
+                <span>{isUploading ? "Subiendo..." : "Subir Archivo"}</span>
                 <input
                   type="file"
                   multiple
@@ -302,7 +302,7 @@ export default function ProfilesPage() {
                   >
                     <div className="flex items-center gap-2.5">
                       <FileText className="w-4 h-4 text-blue-400 shrink-0" />
-                      <span className="font-medium text-slate-200">{doc.name}</span>
+                      <span className="font-medium text-slate-200 truncate">{doc.name}</span>
                     </div>
                     <span className="text-slate-500 text-[11px] font-mono">
                       {(doc.size / 1024).toFixed(1)} KB
@@ -314,7 +314,7 @@ export default function ProfilesPage() {
           </div>
 
           {/* Section 2: URLs of the person */}
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-5">
+          <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4 sm:space-y-5">
             <div className="border-b border-slate-800 pb-3">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Globe className="w-5 h-5 text-emerald-400" />
@@ -332,13 +332,13 @@ export default function ProfilesPage() {
                   key={idx}
                   className="p-3 rounded-lg border border-slate-800 bg-slate-950 flex items-center justify-between text-xs gap-3"
                 >
-                  <div className="space-y-0.5 truncate">
-                    <div className="font-semibold text-slate-200">{u.label}</div>
+                  <div className="space-y-0.5 min-w-0 flex-1 overflow-hidden">
+                    <div className="font-semibold text-slate-200 truncate">{u.label}</div>
                     <a
                       href={u.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline flex items-center gap-1 truncate text-[11px]"
+                      className="text-blue-400 hover:underline flex items-center gap-1 min-w-0 truncate text-[11px]"
                     >
                       <span className="truncate">{u.url}</span>
                       <ExternalLink className="w-3 h-3 shrink-0" />
@@ -454,7 +454,7 @@ export default function ProfilesPage() {
         {/* Right Column: Active Profile Overview & New Candidate Creator */}
         <div className="space-y-8">
           {/* Active Profile Summary Card */}
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+          <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                 Tu Perfil Profesional
@@ -462,10 +462,10 @@ export default function ProfilesPage() {
               <h3 className="text-xl font-bold text-white">
                 {activeProfile?.fullName || "Tu Nombre"}
               </h3>
-              <p className="text-xs text-slate-400">{activeProfile?.headline}</p>
+              <p className="text-xs text-slate-400 break-words">{activeProfile?.headline}</p>
             </div>
 
-            <div className="text-xs text-slate-300 leading-relaxed border-t border-slate-800 pt-3">
+            <div className="text-xs text-slate-300 leading-relaxed border-t border-slate-800 pt-3 break-words">
               {activeProfile?.about}
             </div>
 
