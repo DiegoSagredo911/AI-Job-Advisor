@@ -13,6 +13,9 @@ export async function POST(req: Request) {
       chatHistory = [],
       candidateAnswer,
       applicationId,
+      model,
+      preferredModel,
+      profile: profileFromBody,
     } = body;
 
     if (!candidateAnswer || candidateAnswer.trim() === "") {
@@ -22,7 +25,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const profile = await getProfileBySlug(profileSlug);
+    const profile = profileFromBody || (await getProfileBySlug(profileSlug));
     if (!profile) {
       return NextResponse.json(
         { success: false, error: `Perfil '${profileSlug}' no encontrado` },
@@ -34,7 +37,8 @@ export async function POST(req: Request) {
       profile,
       jobContext || "Vacante Full Stack Developer",
       chatHistory,
-      candidateAnswer
+      candidateAnswer,
+      model || preferredModel
     );
 
     const userMessage: InterviewMessage = {
@@ -53,11 +57,15 @@ export async function POST(req: Request) {
     };
 
     if (applicationId) {
-      const application = await getApplicationById(applicationId);
-      if (application) {
-        application.interviewMessages = application.interviewMessages || [];
-        application.interviewMessages.push(userMessage, interviewerMessage);
-        await saveApplication(application);
+      try {
+        const application = await getApplicationById(applicationId);
+        if (application) {
+          application.interviewMessages = application.interviewMessages || [];
+          application.interviewMessages.push(userMessage, interviewerMessage);
+          await saveApplication(application);
+        }
+      } catch {
+        // Ignore if local application ID not found on server disk
       }
     }
 

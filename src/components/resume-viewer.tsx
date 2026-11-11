@@ -45,6 +45,7 @@ export function ResumeViewer({ resume, applicationId }: ResumeViewerProps) {
         "/api/export/docx",
         {
           profileSlug: activeSlug,
+          profile: activeProfile,
           applicationId,
           format,
           customResume: resume,

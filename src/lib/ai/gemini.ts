@@ -33,16 +33,132 @@ function cleanJsonResponse(rawText: string): string {
   return cleaned.trim();
 }
 
-// Cascada de modelos Flash priorizada según requerimiento: 3.8 -> 3.7 -> 3.6 -> 3.5 -> 2.5 -> 2.0 -> 1.5
-export const FLASH_FALLBACK_MODELS = [
-  "gemini-3.8-flash",
-  "gemini-3.7-flash",
-  "gemini-3.6-flash",
-  "gemini-3.5-flash",
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
+export interface AvailableGeminiModel {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+// Fallbacks seguros basados en modelos estables oficiales de Google Gemini
+export const DEFAULT_FALLBACK_MODELS: AvailableGeminiModel[] = [
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash (Recomendado - Rápido y Versátil)" },
+  { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash (Alta Velocidad)" },
+  { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Clásico Estable)" },
+  { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro (Razonamiento Complejo)" },
 ];
+
+export const FLASH_FALLBACK_MODELS = DEFAULT_FALLBACK_MODELS.map((m) => m.id);
+
+function extractModelScore(id: string): number {
+  let score = 0;
+  const lower = id.toLowerCase();
+  if (lower.includes("flash")) score += 1000;
+  if (lower.includes("pro")) score += 500;
+  const match = lower.match(/(\d+(?:\.\d+)?)/);
+  if (match) {
+    score += parseFloat(match[1]) * 100;
+  }
+  if (lower.includes("preview") || lower.includes("exp")) {
+    score -= 20;
+  }
+  return score;
+}
+
+let cachedModels: {
+  models: AvailableGeminiModel[];
+  timestamp: number;
+  keyPrefix: string;
+} | null = null;
+
+const CACHE_TTL_MS = 1000 * 60 * 30; // 30 minutos
+
+/**
+ * Consulta dinámicamente a la API de Gemini los modelos disponibles que soporten generateContent.
+ * Si falla o no hay conexión, retorna la lista de fallbacks seguros oficiales.
+ */
+export async function getAvailableGeminiModels(
+  customApiKey?: string,
+  forceRefresh = false
+): Promise<AvailableGeminiModel[]> {
+  const apiKey = customApiKey || getApiKey();
+  if (!apiKey) {
+    return DEFAULT_FALLBACK_MODELS;
+  }
+
+  const keyPrefix = apiKey.slice(0, 8);
+  if (
+    !forceRefresh &&
+    cachedModels &&
+    cachedModels.keyPrefix === keyPrefix &&
+    Date.now() - cachedModels.timestamp < CACHE_TTL_MS
+  ) {
+    return cachedModels.models;
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    const pager = await ai.models.list();
+    const foundModels: AvailableGeminiModel[] = [];
+    const seenIds = new Set<string>();
+
+    for await (const m of pager) {
+      if (!m || !m.name) continue;
+      const rawName = m.name;
+      const id = rawName.replace(/^models\//, "").trim();
+
+      if (!id.toLowerCase().startsWith("gemini-")) continue;
+      if (
+        id.includes("embedding") ||
+        id.includes("imagen") ||
+        id.includes("tts") ||
+        id.includes("aqa")
+      ) {
+        continue;
+      }
+
+      // Filtrar por acciones de generación si están presentes
+      const actions = (m as any).supportedActions || (m as any).supportedGenerationMethods;
+      if (Array.isArray(actions) && actions.length > 0) {
+        const canGenerate = actions.some((act: string) =>
+          act.toLowerCase().includes("generatecontent")
+        );
+        if (!canGenerate) continue;
+      }
+
+      if (!seenIds.has(id)) {
+        seenIds.add(id);
+        let displayName = m.displayName || id;
+        if (displayName === id) {
+          displayName = id
+            .split("-")
+            .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" ");
+        }
+        foundModels.push({
+          id,
+          name: displayName,
+          description: m.description,
+        });
+      }
+    }
+
+    if (foundModels.length > 0) {
+      foundModels.sort((a, b) => extractModelScore(b.id) - extractModelScore(a.id));
+      cachedModels = {
+        models: foundModels,
+        timestamp: Date.now(),
+        keyPrefix,
+      };
+      return foundModels;
+    }
+  } catch (err) {
+    console.warn(
+      `[Gemini AI] No se pudo consultar el listado de modelos desde la API (${err instanceof Error ? err.message : String(err)}). Utilizando fallback seguro.`
+    );
+  }
+
+  return DEFAULT_FALLBACK_MODELS;
+}
 
 export interface GeminiCallOutput {
   text: string;
@@ -51,25 +167,39 @@ export interface GeminiCallOutput {
 
 async function callGeminiWithCascade(
   prompt: string,
-  preferredModel?: string
+  preferredModel?: string,
+  customApiKey?: string
 ): Promise<GeminiCallOutput> {
-  const apiKey = getApiKey();
+  const apiKey = customApiKey || getApiKey();
   if (!apiKey) {
     throw new Error(
-      "GEMINI_API_KEY no encontrada. Por favor configura GEMINI_API_KEY en tu archivo .env.local"
+      "GEMINI_API_KEY no encontrada. Por favor configura GEMINI_API_KEY en tu entorno o archivo .env.local"
     );
   }
 
   const ai = new GoogleGenAI({ apiKey });
 
-  // Armamos la lista ordenada de modelos iniciando con el preferido o 3.8 Flash
+  // 1. Obtener modelos dinámicamente desde la API (o caché / fallback)
+  const dynamicModels = await getAvailableGeminiModels(apiKey);
+  const dynamicModelIds = dynamicModels.map((m) => m.id);
+
+  // 2. Modelo preferido: explícito o variable de entorno GEMINI_MODEL o el primero disponible
+  const envModel = process.env.GEMINI_MODEL;
+  const initialModel = preferredModel || envModel || dynamicModelIds[0] || "gemini-2.5-flash";
+
+  // 3. Armamos la lista ordenada de modelos iniciando con el preferido
   const modelsToTry: string[] = [];
-  if (preferredModel && !modelsToTry.includes(preferredModel)) {
-    modelsToTry.push(preferredModel);
+  if (initialModel) {
+    modelsToTry.push(initialModel);
   }
-  for (const m of FLASH_FALLBACK_MODELS) {
-    if (!modelsToTry.includes(m)) {
-      modelsToTry.push(m);
+  for (const mId of dynamicModelIds) {
+    if (!modelsToTry.includes(mId)) {
+      modelsToTry.push(mId);
+    }
+  }
+  for (const fb of DEFAULT_FALLBACK_MODELS) {
+    if (!modelsToTry.includes(fb.id)) {
+      modelsToTry.push(fb.id);
     }
   }
 
@@ -125,7 +255,7 @@ async function callGeminiWithCascade(
       // Si hay un siguiente modelo disponible, reintenta con él
       if (nextModel) {
         console.warn(
-          `⚠️ [Gemini Auto-Fallback] Error con '${currentModel}'. Intentando siguiente versión en cascada '${nextModel}'... (Detalle: ${errMsg.slice(0, 100)})`
+          `⚠️ [Gemini Auto-Fallback] Error con '${currentModel}'. Intentando siguiente modelo dinámico '${nextModel}'... (Detalle: ${errMsg.slice(0, 100)})`
         );
         continue;
       }
@@ -134,18 +264,19 @@ async function callGeminiWithCascade(
 
   throw (
     lastError ||
-    new Error("Todos los modelos Flash (3.8, 3.7, 3.6, 3.5...) alcanzaron límite o no respondieron.")
+    new Error("Todos los modelos de Gemini disponibles alcanzaron límite o no respondieron.")
   );
 }
 
 export async function analyzeJobOffer(
   profile: CandidateProfile,
-  rawJobDescription: string
+  rawJobDescription: string,
+  preferredModel?: string
 ): Promise<JobAnalysisResult> {
   const prompt = buildJobAnalysisPrompt(profile, rawJobDescription);
 
   try {
-    const { text, modelUsed } = await callGeminiWithCascade(prompt, "gemini-3.8-flash");
+    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel);
     const parsed = JSON.parse(text) as JobAnalysisResult;
     parsed.modelUsed = modelUsed;
     return parsed;
@@ -158,12 +289,13 @@ export async function analyzeJobOffer(
 
 export async function generateTailoredResume(
   profile: CandidateProfile,
-  rawJobDescription: string
+  rawJobDescription: string,
+  preferredModel?: string
 ): Promise<TailoredResume> {
   const prompt = buildTailorResumePrompt(profile, rawJobDescription);
 
   try {
-    const { text, modelUsed } = await callGeminiWithCascade(prompt, "gemini-3.8-flash");
+    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel);
     const parsed = JSON.parse(text) as TailoredResume;
     return parsed;
   } catch (err: unknown) {
@@ -175,12 +307,13 @@ export async function generateTailoredResume(
 
 export async function generateOutreach(
   profile: CandidateProfile,
-  rawJobDescription: string
+  rawJobDescription: string,
+  preferredModel?: string
 ): Promise<OutreachPitch> {
   const prompt = buildOutreachPrompt(profile, rawJobDescription);
 
   try {
-    const { text, modelUsed } = await callGeminiWithCascade(prompt, "gemini-3.8-flash");
+    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel);
     const parsed = JSON.parse(text) as OutreachPitch;
     return parsed;
   } catch (err: unknown) {
@@ -194,7 +327,8 @@ export async function evaluateInterviewStep(
   profile: CandidateProfile,
   jobContext: string,
   chatHistory: { role: string; content: string }[],
-  candidateAnswer: string
+  candidateAnswer: string,
+  preferredModel?: string
 ): Promise<{
   interviewerReply: string;
   feedback: NonNullable<InterviewMessage["feedback"]>;
@@ -202,7 +336,7 @@ export async function evaluateInterviewStep(
   const prompt = buildInterviewFeedbackPrompt(profile, jobContext, chatHistory, candidateAnswer);
 
   try {
-    const { text } = await callGeminiWithCascade(prompt, "gemini-3.8-flash");
+    const { text } = await callGeminiWithCascade(prompt, preferredModel);
     const parsed = JSON.parse(text);
     return parsed;
   } catch (err: unknown) {
@@ -228,12 +362,13 @@ export async function evaluateInterviewStep(
 
 export async function ingestProfileFromRawData(
   rawText: string,
-  urls: string[]
+  urls: string[],
+  preferredModel?: string
 ): Promise<CandidateProfile> {
   const prompt = buildProfileIngestionPrompt(rawText, urls);
 
   try {
-    const { text } = await callGeminiWithCascade(prompt, "gemini-3.8-flash");
+    const { text } = await callGeminiWithCascade(prompt, preferredModel);
     const parsed = JSON.parse(text) as CandidateProfile;
     parsed.updatedAt = new Date().toISOString();
     return parsed;

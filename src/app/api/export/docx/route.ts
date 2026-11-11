@@ -7,19 +7,12 @@ import { createResumeDocx, ResumeDocxFormat } from "@/lib/export/docx";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { profileSlug, applicationId, format = "harvard", customResume } = body;
+    const { profileSlug, applicationId, format = "harvard", customResume, profile: profileFromBody } = body;
 
-    if (!profileSlug) {
-      return NextResponse.json(
-        { error: "Se requiere profileSlug" },
-        { status: 400 }
-      );
-    }
-
-    const profile = await getProfileBySlug(profileSlug);
+    const profile = profileFromBody || (profileSlug ? await getProfileBySlug(profileSlug) : null);
     if (!profile) {
       return NextResponse.json(
-        { error: `Perfil ${profileSlug} no encontrado` },
+        { error: "Perfil no encontrado para exportar" },
         { status: 404 }
       );
     }

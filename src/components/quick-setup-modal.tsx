@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useProfile } from "@/context/profile-context";
+import { saveProfile } from "@/lib/storage/local-database";
 import {
   UserPlus,
   Upload,
@@ -91,7 +92,8 @@ export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
       const { data } = await axios.post("/api/profiles/quick-setup", formData);
 
       if (data.success && data.profile) {
-        setProgressMsg("3/3 ¡Perfil consolidado exitosamente!");
+        setProgressMsg("3/3 ¡Perfil guardado en tu navegador!");
+        saveProfile(data.profile);
         await refreshProfiles();
         setActiveSlug(data.profile.slug);
 

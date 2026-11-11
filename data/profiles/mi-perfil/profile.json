@@ -1,33 +1,246 @@
 {
   "slug": "mi-perfil",
-  "fullName": "",
-  "headline": "",
-  "email": "",
-  "phone": "",
-  "location": "",
-  "about": "",
-  "urls": [],
+  "fullName": "Diego Sagredo",
+  "headline": "Ingeniero en Informática | Full Stack Developer",
+  "email": "sagredodhiego@gmail.com",
+  "phone": "+569 9172 5001",
+  "location": "Chile",
+  "about": "Desarrollador Full Stack con más de 4 años de experiencia en React.js, Next.js, Node.js, .NET y bases de datos SQL y NoSQL. Experto en desarrollo de soluciones escalables, seguras y eficientes, con trayectoria en proyectos de cronometraje deportivo, gestión de eventos y sistemas web empresariales. Destaco por mi capacidad de liderazgo, resolución de problemas y entrega de resultados.",
+  "urls": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/DiegoSagredo911"
+    },
+    {
+      "label": "Portafolio",
+      "url": "https://diego-sagredo.vercel.app/"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/diego-sagredo/"
+    }
+  ],
   "skills": {
-    "languages": [],
-    "frameworks": [],
-    "databases": [],
-    "cloudDevOps": [],
-    "toolsMethods": [],
-    "hardwareRealtime": [],
-    "technicalCompetencies": [],
-    "softwareTools": [],
-    "standardsRegulations": [],
-    "managementOperations": []
+    "technicalCompetencies": [
+      "Desarrollo Full Stack",
+      "Sistemas de cronometraje deportivo (chip UHF)",
+      "Diseño y modelado de bases de datos",
+      "Arquitectura y seguridad de software",
+      "Automatización de procesos (Scripts .bat)",
+      "Soporte técnico de hardware"
+    ],
+    "softwareTools": [
+      "Jira",
+      "Nextcloud",
+      "Nginx",
+      "AWS (RDS, EC2, Route 53)"
+    ],
+    "standardsRegulations": [
+      "Licencia de conducir Clase B"
+    ],
+    "managementOperations": [
+      "Metodologías ágiles (Scrum, Sprints)",
+      "Gestión de proyectos y liderazgo técnico"
+    ],
+    "languages": [
+      "C#",
+      "Java",
+      "Python",
+      "JavaScript",
+      "TypeScript",
+      "PHP"
+    ],
+    "frameworks": [
+      "React.js",
+      "Next.js",
+      "Node.js",
+      "Express.js",
+      ".NET Framework",
+      "Angular",
+      "Tailwind CSS",
+      "Bootstrap",
+      "Socket.io"
+    ],
+    "databases": [
+      "MySQL",
+      "PostgreSQL",
+      "MariaDB",
+      "MongoDB",
+      "Amazon Redshift"
+    ]
   },
-  "experience": [],
-  "projects": [],
-  "education": [],
-  "certifications": [],
-  "preferences": {
-    "targetRoles": [],
-    "workModality": "",
-    "salaryExpectation": ""
-  },
-  "rawDocumentsSummary": "",
-  "updatedAt": "2026-10-02T06:24:14.894Z"
+  "experience": [
+    {
+      "id": "exp-1",
+      "company": "Sabotajecronos",
+      "role": "Fundador / Desarrollador Full Stack",
+      "period": "Abril 2023 - Actual",
+      "highlights": [
+        "Liderazgo y desarrollo de proyecto personal de cronometraje deportivo utilizando tecnología chip UHF.",
+        "Desarrollo integral de back-end, front-end, aplicación móvil y software de escritorio.",
+        "Implementación continua de mejoras e innovaciones orientadas a optimizar la experiencia de los usuarios."
+      ],
+      "technologies": [
+        "UHF",
+        "Full Stack",
+        "Mobile App",
+        "Desktop Software"
+      ]
+    },
+    {
+      "id": "exp-2",
+      "company": "MyProt LLC",
+      "role": "Full Stack Developer Freelance",
+      "period": "Enero 2026 - Mayo 2026",
+      "highlights": [
+        "Desarrollo full stack freelance para sistema KPI empresarial basado en Next.js, PostgreSQL y Amazon Redshift.",
+        "Resolución y gestión ágil de casos de desarrollo a través de Jira, integrando nuevas funcionalidades y corrigiendo incidencias."
+      ],
+      "technologies": [
+        "Next.js",
+        "PostgreSQL",
+        "Amazon Redshift",
+        "Jira"
+      ]
+    },
+    {
+      "id": "exp-3",
+      "company": "IP Virginio Gómez",
+      "role": "Desarrollador / Soporte de Laboratorio",
+      "period": "Mar 2025 - Jun 2025",
+      "highlights": [
+        "Automatización de tareas y procesos en laboratorio de computación mediante scripts en .bat.",
+        "Desarrollo de un sistema de bitácora para la administración y gestión integral del laboratorio.",
+        "Integración con plataforma Nextcloud para garantizar almacenamiento seguro en servidores locales."
+      ],
+      "technologies": [
+        ".bat",
+        "Nextcloud",
+        "Automatización"
+      ]
+    },
+    {
+      "id": "exp-4",
+      "company": "El Refugio Ingeniería y Construcción SPA",
+      "role": "Líder de Proyecto / Desarrollador Full Stack",
+      "period": "Oct 2023 - Feb 2024",
+      "highlights": [
+        "Liderazgo en la reconstrucción web con implementación de monitoreo de proyectos en tiempo real.",
+        "Gestión de equipo bajo metodología ágil, garantizando el cumplimiento de objetivos en cada sprint.",
+        "Desarrollo full stack con enfoque en alta escalabilidad y rendimiento."
+      ],
+      "technologies": [
+        "Metodologías ágiles",
+        "Monitoreo en tiempo real",
+        "Full Stack"
+      ]
+    },
+    {
+      "id": "exp-5",
+      "company": "Sentinel Care",
+      "role": "Full Stack Developer",
+      "period": "Mar 2024 - Sep 2024",
+      "highlights": [
+        "Implementación full stack orientada a diseños UX/UI priorizando usabilidad y eficiencia.",
+        "Diseño de arquitectura de bases de datos y lógica de negocio bajo estándares de seguridad y escalabilidad.",
+        "Entrega de módulos integrales de front-end y back-end."
+      ],
+      "technologies": [
+        "UX/UI",
+        "Bases de datos",
+        "Back-end",
+        "Front-end"
+      ]
+    },
+    {
+      "id": "exp-6",
+      "company": "RYC Consultores",
+      "role": "Soporte Técnico & Desarrollador Full Stack",
+      "period": "Ago 2022 - Feb 2023",
+      "highlights": [
+        "Prestación de soporte técnico de hardware para Coopeuch, asegurando la continuidad operativa del personal.",
+        "Desarrollo e incorporación de nuevas funcionalidades en panel de control de KPI.",
+        "Asistencia técnica y resolución de problemas para el equipo de trabajo."
+      ],
+      "technologies": [
+        "Hardware Support",
+        "KPI Dashboard",
+        "Full Stack"
+      ]
+    },
+    {
+      "id": "exp-7",
+      "company": "Qualitat",
+      "role": "Practicante de Desarrollo Web",
+      "period": "Ene 2022 - Feb 2022",
+      "highlights": [
+        "Desarrollo web utilizando Angular con integración a APIs REST.",
+        "Optimización de rendimiento en bases de datos mediante depuración y limpieza de registros antiguos."
+      ],
+      "technologies": [
+        "Angular",
+        "API REST",
+        "Bases de datos"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "name": "Sabotajecronos",
+      "role": "Creador y Desarrollador Principal",
+      "description": "Solución integral multiplataforma para el cronometraje deportivo mediante chips UHF, integrando back-end, front-end, app móvil y software de escritorio.",
+      "url": "",
+      "architectureHighlights": [
+        "Captura y procesamiento de tiempos en tiempo real mediante tecnología UHF",
+        "Ecosistema unificado entre aplicación móvil, web y escritorio"
+      ],
+      "technologies": [
+        "UHF",
+        "Full Stack",
+        "Mobile",
+        "Desktop"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Ingeniería en Informática",
+      "institution": "Instituto Profesional Dr. Virginio Gómez",
+      "period": "2023 - 2025"
+    },
+    {
+      "degree": "Técnico Analista Programador",
+      "institution": "Instituto Profesional Dr. Virginio Gómez",
+      "period": "2020 - 2022"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Lidera a Toda Velocidad: Lecciones de la Formula 1®",
+      "issuer": "Formula 1®",
+      "year": "2025"
+    },
+    {
+      "name": "Cybersecurity Essentials",
+      "issuer": "Cisco Networking Academy",
+      "year": "2024"
+    },
+    {
+      "name": "Curso de Ciberseguridad",
+      "issuer": "Instituto Profesional Dr. Virginio Gómez",
+      "year": "2022"
+    },
+    {
+      "name": "Certificación Académica en Programación, Análisis y Python",
+      "issuer": "Instituto Profesional Dr. Virginio Gómez",
+      "year": "2021-2022"
+    },
+    {
+      "name": "Computación Básica",
+      "issuer": "Sence.cl",
+      "year": "2019"
+    }
+  ],
+  "updatedAt": "2026-10-26T21:29:10.040Z"
 }

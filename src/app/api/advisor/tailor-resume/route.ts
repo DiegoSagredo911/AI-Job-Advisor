@@ -6,15 +6,26 @@ import { getApplicationById, saveApplication } from "@/lib/applications";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { profileSlug = "mi-perfil", rawJobDescription, applicationId } = body;
+    const {
+      profileSlug = "mi-perfil",
+      rawJobDescription,
+      applicationId,
+      model,
+      preferredModel,
+      profile: profileFromBody,
+    } = body;
 
     let jobDesc = rawJobDescription;
     let application = null;
 
     if (applicationId) {
-      application = await getApplicationById(applicationId);
-      if (application) {
-        jobDesc = jobDesc || application.rawJobDescription;
+      try {
+        application = await getApplicationById(applicationId);
+        if (application) {
+          jobDesc = jobDesc || application.rawJobDescription;
+        }
+      } catch {
+        // Ignore if local application ID not found on server disk
       }
     }
 
@@ -25,7 +36,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const profile = await getProfileBySlug(profileSlug);
+    const profile = profileFromBody || (await getProfileBySlug(profileSlug));
     if (!profile) {
       return NextResponse.json(
         { success: false, error: `Perfil '${profileSlug}' no encontrado` },
@@ -33,7 +44,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const tailoredResume = await generateTailoredResume(profile, jobDesc);
+    const tailoredResume = await generateTailoredResume(
+      profile,
+      jobDesc,
+      model || preferredModel
+    );
 
     if (application) {
       application.tailoredResume = tailoredResume;

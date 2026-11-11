@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "label": "GitHub",
+    "url": "https://github.com/DiegoSagredo911"
+  },
+  {
+    "label": "Portafolio",
+    "url": "https://diego-sagredo.vercel.app/"
+  },
+  {
+    "label": "LinkedIn",
+    "url": "https://www.linkedin.com/in/diego-sagredo/"
+  }
+]

@@ -20,6 +20,12 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import axios from "axios";
+import { useProfile } from "@/context/profile-context";
+import {
+  getApplicationById,
+  saveApplication,
+  deleteApplication,
+} from "@/lib/storage/local-database";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,6 +34,7 @@ interface PageProps {
 export default function ApplicationDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const { activeProfile } = useProfile();
   const [app, setApp] = useState<JobApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"analysis" | "resume" | "outreach" | "interview">("analysis");
@@ -38,12 +45,18 @@ export default function ApplicationDetailPage({ params }: PageProps) {
   const fetchApplication = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/api/applications/${id}`);
-      if (data.success && data.application) {
-        setApp(data.application);
+      const local = getApplicationById(id);
+      if (local) {
+        setApp(local);
+      } else {
+        const { data } = await axios.get(`/api/applications/${id}`);
+        if (data.success && data.application) {
+          setApp(data.application);
+          saveApplication(data.application);
+        }
       }
     } catch (err) {
-      console.error("Error loading application with axios:", err);
+      console.error("Error loading application:", err);
     } finally {
       setLoading(false);
     }
@@ -53,26 +66,24 @@ export default function ApplicationDetailPage({ params }: PageProps) {
     fetchApplication();
   }, [id]);
 
-  const handleStatusChange = async (newStatus: JobApplication["status"]) => {
+  const handleStatusChange = (newStatus: JobApplication["status"]) => {
     if (!app) return;
     try {
       const updated = { ...app, status: newStatus };
-      await axios.put(`/api/applications/${id}`, updated);
+      saveApplication(updated);
       setApp(updated);
     } catch (err) {
-      console.error("Error updating application status with axios:", err);
+      console.error("Error updating application status:", err);
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!confirm("¿Eliminar esta postulación?")) return;
     try {
-      const { data } = await axios.delete(`/api/applications/${id}`);
-      if (data.success) {
-        router.push("/");
-      }
+      deleteApplication(id);
+      router.push("/");
     } catch (err) {
-      console.error("Error deleting application with axios:", err);
+      console.error("Error deleting application:", err);
     }
   };
 
@@ -82,10 +93,14 @@ export default function ApplicationDetailPage({ params }: PageProps) {
     try {
       const { data } = await axios.post("/api/advisor/tailor-resume", {
         profileSlug: app.profileSlug,
+        profile: activeProfile,
+        rawJobDescription: app.rawJobDescription,
         applicationId: app.id,
       });
       if (data.success && data.tailoredResume) {
-        setApp((prev) => (prev ? { ...prev, tailoredResume: data.tailoredResume } : prev));
+        const updated = { ...app, tailoredResume: data.tailoredResume };
+        saveApplication(updated);
+        setApp(updated);
       }
     } catch (err) {
       console.error("Error tailoring resume with axios:", err);
@@ -100,10 +115,14 @@ export default function ApplicationDetailPage({ params }: PageProps) {
     try {
       const { data } = await axios.post("/api/advisor/outreach", {
         profileSlug: app.profileSlug,
+        profile: activeProfile,
+        rawJobDescription: app.rawJobDescription,
         applicationId: app.id,
       });
       if (data.success && data.outreachPitch) {
-        setApp((prev) => (prev ? { ...prev, outreachPitch: data.outreachPitch } : prev));
+        const updated = { ...app, outreachPitch: data.outreachPitch };
+        saveApplication(updated);
+        setApp(updated);
       }
     } catch (err) {
       console.error("Error generating outreach with axios:", err);

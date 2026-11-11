@@ -8,12 +8,17 @@ interface RouteParams {
 export async function POST(req: Request, { params }: RouteParams) {
   try {
     const { slug } = await params;
-    const profile = await resetProfile(slug);
+    let profile = null;
+    try {
+      profile = await resetProfile(slug);
+    } catch {
+      // Browser handles reset on Vercel
+    }
 
     return NextResponse.json({
       success: true,
       profile,
-      message: `Perfil '${slug}' reiniciado con éxito. Se han eliminado todas las referencias, postulaciones, documentos y URLs previas.`,
+      message: `Perfil '${slug}' reiniciado con éxito en tu navegador.`,
     });
   } catch (error: unknown) {
     console.error("Error resetting profile:", error);

@@ -48,7 +48,11 @@ export async function PUT(req: Request, { params }: RouteParams) {
       body.slug = slug;
     }
 
-    await saveProfile(body);
+    try {
+      await saveProfile(body);
+    } catch {
+      // Browser handles storage on Vercel
+    }
     return NextResponse.json({ success: true, profile: body });
   } catch (error: unknown) {
     return NextResponse.json(

@@ -7,7 +7,14 @@ import { JobApplication } from "@/types/advisor";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { profileSlug = "mi-perfil", rawJobDescription, saveAsApplication } = body;
+    const {
+      profileSlug = "mi-perfil",
+      rawJobDescription,
+      saveAsApplication,
+      model,
+      preferredModel,
+      profile: profileFromBody,
+    } = body;
 
     if (!rawJobDescription || rawJobDescription.trim().length < 15) {
       return NextResponse.json(
@@ -16,7 +23,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const profile = await getProfileBySlug(profileSlug);
+    const profile = profileFromBody || (await getProfileBySlug(profileSlug));
     if (!profile) {
       return NextResponse.json(
         { success: false, error: `Perfil '${profileSlug}' no encontrado` },
@@ -24,7 +31,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const analysis = await analyzeJobOffer(profile, rawJobDescription);
+    const analysis = await analyzeJobOffer(
+      profile,
+      rawJobDescription,
+      model || preferredModel
+    );
 
     let application: JobApplication | undefined = undefined;
 

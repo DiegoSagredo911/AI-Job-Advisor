@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
-import {
-  getProfileBySlug,
-  saveProfile,
-  readAllProfileDocumentsText,
-  getProfileUrls,
-} from "@/lib/profiles";
 import { ingestProfileFromRawData } from "@/lib/ai/gemini";
+import { CandidateProfile } from "@/types/profile";
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
@@ -14,44 +9,41 @@ interface RouteParams {
 export async function POST(req: Request, { params }: RouteParams) {
   try {
     const { slug } = await params;
-    const existing = await getProfileBySlug(slug);
+    const body = await req.json();
+
+    const existing: CandidateProfile | null = body?.profile || null;
 
     if (!existing) {
       return NextResponse.json(
-        { success: false, error: "Perfil no encontrado" },
-        { status: 404 }
+        { success: false, error: "Datos de perfil no proporcionados en la solicitud." },
+        { status: 400 }
       );
     }
 
-    const docs = await readAllProfileDocumentsText(slug);
-    const urls = await getProfileUrls(slug);
+    const aggregatedText: string = body?.documentsText || existing.rawDocumentsSummary || "";
+    const urls = body?.urls || existing.urls || [];
 
-    if (docs.length === 0 && urls.length === 0) {
+    if (!aggregatedText.trim() && urls.length === 0) {
       return NextResponse.json(
         {
           success: false,
           error:
-            "No se encontraron documentos en la carpeta documents/ ni URLs configuradas para este perfil.",
+            "No se encontraron documentos ni URLs configuradas para consolidar este perfil.",
         },
         { status: 400 }
       );
     }
 
-    const aggregatedText = docs
-      .map((d) => `=== DOCUMENTO: ${d.filename} ===\n${d.text}`)
-      .join("\n\n");
-
-    const urlStrings = urls.map((u) => `${u.label}: ${u.url} (${u.description || ""})`);
+    const urlStrings = urls.map((u: any) => `${u.label}: ${u.url} (${u.description || ""})`);
 
     const updatedProfile = await ingestProfileFromRawData(aggregatedText, urlStrings);
 
-    // Retain slug and merge URLs
-    updatedProfile.slug = slug;
+    // Retain slug, documents and merge URLs
+    updatedProfile.slug = slug || existing.slug || "mi-perfil";
+    updatedProfile.documents = existing.documents || [];
     if (!updatedProfile.urls || updatedProfile.urls.length === 0) {
       updatedProfile.urls = urls;
     }
-
-    await saveProfile(updatedProfile);
 
     return NextResponse.json({
       success: true,

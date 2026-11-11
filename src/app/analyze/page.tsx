@@ -8,6 +8,7 @@ import { MatchScoreCard } from "@/components/match-score-card";
 import { ResumeViewer } from "@/components/resume-viewer";
 import { OutreachViewer } from "@/components/outreach-viewer";
 import { MockInterview } from "@/components/mock-interview";
+import { saveApplication, getApplicationById } from "@/lib/storage/local-database";
 import {
   Sparkles,
   FileSearch,
@@ -78,15 +79,27 @@ Requisitos:
     try {
       const { data } = await axios.post("/api/advisor/analyze", {
         profileSlug: activeSlug,
+        profile: activeProfile,
         rawJobDescription: jobText,
-        saveAsApplication: true,
+        saveAsApplication: false,
       });
 
-      if (data.success) {
+      if (data.success && data.analysis) {
         setAnalysis(data.analysis);
-        if (data.application) {
-          setSavedAppId(data.application.id);
-        }
+        const newAppId = "app-" + Date.now();
+        const newApp: JobApplication = {
+          id: newAppId,
+          profileSlug: activeSlug,
+          jobTitle: data.analysis.jobTitle || "Vacante Analizada",
+          companyName: data.analysis.companyName || "Empresa",
+          rawJobDescription: jobText,
+          status: "draft",
+          analysis: data.analysis,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        saveApplication(newApp);
+        setSavedAppId(newAppId);
       } else {
         alert(data.error || "Ocurrió un error al analizar la vacante.");
       }
@@ -104,11 +117,19 @@ Requisitos:
     try {
       const { data } = await axios.post("/api/advisor/tailor-resume", {
         profileSlug: activeSlug,
+        profile: activeProfile,
         rawJobDescription: jobText,
         applicationId: savedAppId,
       });
-      if (data.success) {
+      if (data.success && data.tailoredResume) {
         setResume(data.tailoredResume);
+        if (savedAppId) {
+          const app = getApplicationById(savedAppId);
+          if (app) {
+            app.tailoredResume = data.tailoredResume;
+            saveApplication(app);
+          }
+        }
       }
     } catch (err) {
       console.error("Error tailoring resume with axios:", err);
@@ -123,11 +144,19 @@ Requisitos:
     try {
       const { data } = await axios.post("/api/advisor/outreach", {
         profileSlug: activeSlug,
+        profile: activeProfile,
         rawJobDescription: jobText,
         applicationId: savedAppId,
       });
-      if (data.success) {
+      if (data.success && data.outreachPitch) {
         setOutreach(data.outreachPitch);
+        if (savedAppId) {
+          const app = getApplicationById(savedAppId);
+          if (app) {
+            app.outreachPitch = data.outreachPitch;
+            saveApplication(app);
+          }
+        }
       }
     } catch (err) {
       console.error("Error generating outreach with axios:", err);

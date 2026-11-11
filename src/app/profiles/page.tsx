@@ -27,15 +27,19 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
+import { resetProfileData } from "@/lib/storage/local-database";
+import { ProfileDocument } from "@/types/profile";
+
 export default function ProfilesPage() {
   const {
     activeSlug,
     activeProfile,
     refreshProfiles,
     reloadActiveProfile,
+    updateCurrentProfile,
   } = useProfile();
 
-  const [documents, setDocuments] = useState<{ name: string; size: number; modifiedAt: string }[]>([]);
+  const [documents, setDocuments] = useState<ProfileDocument[]>([]);
   const [urls, setUrls] = useState<ProfileUrl[]>([]);
   const [loadingDocs, setLoadingDocs] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -45,7 +49,6 @@ export default function ProfilesPage() {
   // New URL state
   const [newUrlLabel, setNewUrlLabel] = useState("");
   const [newUrlValue, setNewUrlValue] = useState("");
-
 
   // Generic Word CV Download state
   const [downloadingDocx, setDownloadingDocx] = useState<"harvard" | "ats" | null>(null);
@@ -59,6 +62,7 @@ export default function ProfilesPage() {
         "/api/export/docx",
         {
           profileSlug: activeSlug,
+          profile: activeProfile,
           format,
         },
         { responseType: "blob" }
@@ -91,48 +95,31 @@ export default function ProfilesPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetNotice, setResetNotice] = useState<string | null>(null);
 
-  const fetchProfileDetails = async () => {
-    setLoadingDocs(true);
-    try {
-      const { data } = await axios.get(`/api/profiles/${activeSlug}`);
-      if (data.success) {
-        setDocuments(data.documents || []);
-        setUrls(data.urls || []);
-      }
-    } catch (err) {
-      console.error("Error loading profile details with axios:", err);
-    } finally {
-      setLoadingDocs(false);
+  useEffect(() => {
+    if (activeProfile) {
+      setDocuments(activeProfile.documents || []);
+      setUrls(activeProfile.urls || []);
     }
-  };
+  }, [activeProfile]);
 
-  const handleResetProfile = async () => {
+  const handleResetProfile = () => {
     if (isResetting) return;
     setIsResetting(true);
     try {
-      const { data } = await axios.post(`/api/profiles/${activeSlug}/reset`);
-      if (data.success) {
-        setDocuments([]);
-        setUrls([]);
-        setResetNotice("¡Perfil reiniciado exitosamente! Se han eliminado todas las referencias, documentos, enlaces y postulaciones previas. Sube tu nuevo CV o notas para configurar tu asesor.");
-        setShowResetModal(false);
-        await reloadActiveProfile();
-        await refreshProfiles();
-        setTimeout(() => setResetNotice(null), 8000);
-      } else {
-        alert(data.error || "No se pudo reiniciar el perfil.");
-      }
+      const resetData = resetProfileData(activeSlug);
+      updateCurrentProfile(resetData);
+      setDocuments([]);
+      setUrls([]);
+      setResetNotice("¡Perfil reiniciado exitosamente! Se han eliminado todas las referencias, documentos, enlaces y postulaciones de tu navegador. Puedes configurar tu asesor desde cero.");
+      setShowResetModal(false);
+      setTimeout(() => setResetNotice(null), 8000);
     } catch (err) {
-      console.error("Error resetting profile with axios:", err);
-      alert("Error de conexión al reiniciar el perfil.");
+      console.error("Error resetting profile:", err);
+      alert("Error al reiniciar el perfil.");
     } finally {
       setIsResetting(false);
     }
   };
-
-  useEffect(() => {
-    fetchProfileDetails();
-  }, [activeSlug]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -146,54 +133,83 @@ export default function ProfilesPage() {
 
     try {
       const { data } = await axios.post(`/api/profiles/${activeSlug}/documents`, formData);
-      if (data.success) {
-        alert(data.message || "Archivos subidos con éxito");
-        fetchProfileDetails();
-        refreshProfiles();
+      if (data.success && data.documents && activeProfile) {
+        const currentDocs = activeProfile.documents || [];
+        const mergedDocs = [...currentDocs];
+        for (const newDoc of data.documents) {
+          const idx = mergedDocs.findIndex((d) => d.name === newDoc.name);
+          if (idx >= 0) {
+            mergedDocs[idx] = newDoc;
+          } else {
+            mergedDocs.push(newDoc);
+          }
+        }
+        const updated = { ...activeProfile, documents: mergedDocs };
+        updateCurrentProfile(updated);
+        setDocuments(mergedDocs);
+        alert(data.message || "Archivos procesados y guardados en tu navegador");
       } else {
-        alert(data.error || "Error al subir archivos");
+        alert(data.error || "Error al procesar archivos");
       }
     } catch (err) {
       console.error("Error uploading documents with axios:", err);
+      alert("Error de conexión al procesar los archivos.");
     } finally {
       setIsUploading(false);
+      e.target.value = "";
     }
   };
 
-  const handleAddUrl = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUrlLabel.trim() || !newUrlValue.trim()) return;
+  const handleDeleteDocument = (docName: string) => {
+    if (!activeProfile) return;
+    const remaining = (activeProfile.documents || []).filter((d) => d.name !== docName);
+    const updated = { ...activeProfile, documents: remaining };
+    updateCurrentProfile(updated);
+    setDocuments(remaining);
+  };
 
-    const updated = [
-      ...urls,
+  const handleAddUrl = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUrlLabel.trim() || !newUrlValue.trim() || !activeProfile) return;
+
+    const updatedUrls = [
+      ...(activeProfile.urls || []),
       { label: newUrlLabel.trim(), url: newUrlValue.trim() },
     ];
 
-    try {
-      if (activeProfile) {
-        const fullUpdated = { ...activeProfile, urls: updated };
-        await axios.put(`/api/profiles/${activeSlug}`, fullUpdated);
-      }
-      setUrls(updated);
-      setNewUrlLabel("");
-      setNewUrlValue("");
-      reloadActiveProfile();
-    } catch (err) {
-      console.error("Error adding URL with axios:", err);
-    }
+    const updatedProfile = { ...activeProfile, urls: updatedUrls };
+    updateCurrentProfile(updatedProfile);
+    setUrls(updatedUrls);
+    setNewUrlLabel("");
+    setNewUrlValue("");
+  };
+
+  const handleDeleteUrl = (index: number) => {
+    if (!activeProfile) return;
+    const remaining = (activeProfile.urls || []).filter((_, i) => i !== index);
+    const updated = { ...activeProfile, urls: remaining };
+    updateCurrentProfile(updated);
+    setUrls(remaining);
   };
 
   const handleIngestWithAI = async () => {
-    if (isIngesting) return;
+    if (isIngesting || !activeProfile) return;
     setIsIngesting(true);
-    setIngestStatus("Leyendo documentos de la carpeta y URLs con IA...");
+    setIngestStatus("Analizando documentos y URLs con IA...");
+
+    const aggregatedText = (activeProfile.documents || [])
+      .map((d) => `=== DOCUMENTO: ${d.name} ===\n${d.extractedText || ""}`)
+      .join("\n\n");
 
     try {
-      const { data } = await axios.post(`/api/profiles/${activeSlug}/ingest`);
-      if (data.success) {
-        setIngestStatus("¡Perfil maestro consolidado exitosamente!");
-        await reloadActiveProfile();
-        await refreshProfiles();
+      const { data } = await axios.post(`/api/profiles/${activeSlug}/ingest`, {
+        profile: activeProfile,
+        documentsText: aggregatedText,
+        urls: activeProfile.urls,
+      });
+      if (data.success && data.profile) {
+        setIngestStatus("¡Perfil consolidado exitosamente en tu navegador!");
+        updateCurrentProfile(data.profile);
         setTimeout(() => setIngestStatus(null), 4000);
       } else {
         setIngestStatus(data.error || "No se pudo consolidar el perfil");
@@ -298,15 +314,25 @@ export default function ProfilesPage() {
                 {documents.map((doc, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg border border-slate-800 bg-slate-950 flex items-center justify-between text-xs"
+                    className="p-3 rounded-lg border border-slate-800 bg-slate-950 flex items-center justify-between text-xs gap-3"
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1 truncate">
                       <FileText className="w-4 h-4 text-blue-400 shrink-0" />
                       <span className="font-medium text-slate-200 truncate">{doc.name}</span>
                     </div>
-                    <span className="text-slate-500 text-[11px] font-mono">
-                      {(doc.size / 1024).toFixed(1)} KB
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-slate-500 text-[11px] font-mono">
+                        {(doc.size / 1024).toFixed(1)} KB
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteDocument(doc.name)}
+                        className="text-slate-500 hover:text-rose-400 transition-colors p-1"
+                        title="Eliminar documento del perfil"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -349,6 +375,14 @@ export default function ProfilesPage() {
                       {u.description}
                     </span>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteUrl(idx)}
+                    className="text-slate-500 hover:text-rose-400 transition-colors p-1 shrink-0"
+                    title="Eliminar enlace"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ))}
             </div>

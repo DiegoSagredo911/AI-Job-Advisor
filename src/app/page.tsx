@@ -18,24 +18,29 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { QuickSetupModal } from "@/components/quick-setup-modal";
-import axios from "axios";
+import {
+  getAllApplications,
+  saveApplication,
+  deleteApplication,
+  exportAllDataAsJson,
+  importDataFromJson,
+} from "@/lib/storage/local-database";
+import { Download, Upload as UploadIcon, HardDrive } from "lucide-react";
 
 export default function DashboardPage() {
-  const { activeSlug, activeProfile } = useProfile();
+  const { activeSlug, activeProfile, refreshProfiles, reloadActiveProfile } = useProfile();
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [isSetupOpen, setIsSetupOpen] = useState(false);
 
-  const fetchApplications = async () => {
+  const fetchApplications = () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/api/applications?profile=${activeSlug}`);
-      if (data.success && data.applications) {
-        setApplications(data.applications);
-      }
+      const data = getAllApplications(activeSlug);
+      setApplications(data);
     } catch (err) {
-      console.error("Error fetching applications with axios:", err);
+      console.error("Error loading applications from browser storage:", err);
     } finally {
       setLoading(false);
     }
@@ -45,30 +50,72 @@ export default function DashboardPage() {
     fetchApplications();
   }, [activeSlug]);
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("¿Eliminar esta postulación?")) return;
     try {
-      const { data } = await axios.delete(`/api/applications/${id}`);
-      if (data.success) {
-        setApplications((prev) => prev.filter((a) => a.id !== id));
-      }
+      deleteApplication(id);
+      setApplications((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
-      console.error("Error deleting application with axios:", err);
+      console.error("Error deleting application from browser storage:", err);
     }
   };
 
-  const handleStatusChange = async (id: string, newStatus: JobApplication["status"], e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStatusChange = (id: string, newStatus: JobApplication["status"], e: React.ChangeEvent<HTMLSelectElement>) => {
     e.stopPropagation();
     try {
       const app = applications.find((a) => a.id === id);
       if (!app) return;
       const updated = { ...app, status: newStatus };
-      await axios.put(`/api/applications/${id}`, updated);
+      saveApplication(updated);
       setApplications((prev) => prev.map((a) => (a.id === id ? updated : a)));
     } catch (err) {
-      console.error("Error updating status with axios:", err);
+      console.error("Error updating status in browser storage:", err);
     }
+  };
+
+  const handleExportBackup = () => {
+    try {
+      const json = exportAllDataAsJson();
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `AI_Job_Advisor_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Error exporting backup:", err);
+      alert("Error al exportar copia de seguridad.");
+    }
+  };
+
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const content = event.target?.result as string;
+        const res = importDataFromJson(content);
+        if (res.success) {
+          alert("¡Copia de seguridad restaurada exitosamente!");
+          await refreshProfiles();
+          await reloadActiveProfile();
+          fetchApplications();
+        } else {
+          alert(res.error || "Archivo de copia de seguridad no válido.");
+        }
+      } catch (err) {
+        console.error("Error importing backup:", err);
+        alert("Error al leer el archivo de respaldo.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   const filtered = applications.filter((app) =>
@@ -131,12 +178,40 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="pt-2 text-xs text-slate-400 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>
-              Perfil activo: <strong className="text-white">{activeProfile?.fullName || "Mi Perfil"}</strong>.
-              Puedes cargar tu propio CV y enlaces para tener tu asesor listo a tu medida.
-            </span>
+          <div className="pt-2 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80 mt-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>
+                Perfil activo: <strong className="text-white">{activeProfile?.fullName || "Mi Perfil"}</strong> •{" "}
+                <span className="text-emerald-400 font-medium">Almacenado localmente en tu navegador</span>
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleExportBackup}
+                title="Descargar copia de seguridad en JSON de tus datos guardados en el navegador"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 text-[11px] font-medium border border-slate-700 transition-colors"
+              >
+                <Download className="w-3 h-3 text-blue-400" />
+                <span>Exportar Copia (.json)</span>
+              </button>
+
+              <label
+                title="Restaurar tus datos desde un archivo JSON de respaldo"
+                className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 text-[11px] font-medium border border-slate-700 transition-colors"
+              >
+                <UploadIcon className="w-3 h-3 text-indigo-400" />
+                <span>Importar Copia</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportBackup}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
         </div>
       </div>

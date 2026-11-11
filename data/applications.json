@@ -1,1 +1,196 @@
-[]
+[
+  {
+    "id": "app-1793050610655",
+    "profileSlug": "mi-perfil",
+    "jobTitle": "Ingeniero/a de Desarrollo IA",
+    "companyName": "ARAUCO",
+    "rawJobDescription": "Ingeniero/a de Desarrollo IA - San Andrés\n\n En ARAUCO re­conocemos a la persona desde su individualidad y diversidad. Creemos que la contribución de cada una es única, y que los equipos se enriquecen cuando son capaces de integrar diferentes miradas y capacidades. Consideramos la inclusión y la diversidad como aspectos fundamentales para el logro de los desafíos presentes y futuros . \n\nARAUCO busca a su próxima/o Ingeniero de Desarrollo IA para unirse a la subgerencia de Mejora Continua y desempeñarse en oficina San Andrés, Concepción.\n\nObjetivo del cargo:\n\nDiseñar, desarrollar e implementar soluciones de Inteligencia Artificial aplicadas al negocio forestal, transformando datos operacionales (cosecha, mantenimiento, planificación y abastecimiento) en modelos predictivos, sistemas inteligentes y asistentes AI que generen impacto real en costos, productividad y toma de decisiones.\n\nResponsabilidades:\n\nDiseñar modelos de ML / DL para predicción, clasificación y optimización (fallas, rendimiento, demanda, rutas, planificación).\nDesarrollar soluciones de IA aplicada: RAG, agentes inteligentes, chatbots técnicos, sistemas de recomendación.\nIntegrar datos en los sistemas actuales de la compañía (GIS, SAP, etc.)\nConstruir pipelines end-to-end: ingestión, entrenamiento, validación, despliegue y monitoreo.\nTrabajar con equipos de operaciones, mantenimiento, planificación y TI, traduciendo problemas de negocio a soluciones AI.\nAsegurar buenas prácticas de MLOps, calidad de datos, trazabilidad y gobierno de datos.\n\n\nFormación requerida:\n\nIngeniería, Ciencias de la Computación, Matemática, Industrial, Estadística o afín.\nPostgrado o especialización en Data Science / AI (deseable, no excluyente).\n\n\nConocimientos técnicos esenciales:\n\nPython avanzado y librerías avanzadas de GenAI\nModelos clásicos y avanzados tanto de Analítica Avanzada como de Inteligencia Artificial.\nLLMs y GenAI: prompt engineering, RAG, embeddings, agentes (OpenAI, Genini u otros).\nManejo de datos no estructurados (JSON, PDFs, texto, imágenes) como estructurados (PostgreSQL, SQL,etc.)\nNociones de MLOps: versionado, validación, despliegue, monitoreo.\nManejo de servicios on the Cloud (deseable Google Cloud Platform)\nVisualización y reporting técnico.\n\n\nDeseable (alto valor en forestal)\n\nExperiencia con datos industriales o de terreno (manufactura, minería, forestal, logística).\nConocimiento en optimización, planificación, simulación.\nUso de GIS / datos espaciales o telemetría.\nExperiencia integrando IA con flujos automatizados (ej. n8n, Airflow).\n\n\n En ARAUCO trabajamos día a día para desarrollar productos forestales renovables que permitan mejoran la vida de las personas, tarea que nos desafía a tener equipos comprometidos, entusiastas y creativos. Somos una empresa global con más de 50 años de trayectoria, con operaciones y clientes en distintos países, unida por una misma cultura organizacional. Por ello, trabajamos en propiciar las condiciones necesarias para atraer y desarrollar personas en ambientes laborales basados en el respeto, la colaboración, y la comunicación permanente.",
+    "status": "draft",
+    "analysis": {
+      "jobTitle": "Ingeniero/a de Desarrollo IA",
+      "companyName": "ARAUCO",
+      "detectedLanguage": "es",
+      "matchScore": 65,
+      "seniorityLevel": "Semi-Senior",
+      "fitSummary": "Diego cuenta con una base sólida como Ingeniero en Informática, dominio de Python, manejo de bases de datos analíticas (PostgreSQL, Redshift) y experiencia práctica en captura y procesamiento de datos en tiempo real desde hardware/terreno (tecnología UHF). No obstante, su trayectoria ha estado concentrada en desarrollo Full Stack y arquitectura de software web, presentando brechas directas en la implementación productiva de Inteligencia Artificial Generativa (RAG, Agentes, LLMs), MLOps formal y el ecosistema Google Cloud Platform (GCP). Su mejor ángulo de posicionamiento es como un Ingeniero de Software orientado a IA capaz de integrar, desplegar y conectar modelos con los sistemas core del negocio.",
+      "keyStrengths": [
+        "Título profesional de Ingeniero en Informática con certificación académica en Programación, Análisis y Python.",
+        "Experiencia con telemetría y captura de datos en terreno/tiempo real mediante tecnología UHF y software embebido/escritorio en Sabotajecronos.",
+        "Manejo robusto de datos estructurados, modelado relacional y bodegas de datos con PostgreSQL y Amazon Redshift en MyProt LLC.",
+        "Capacidad comprobada de construir arquitecturas end-to-end (backend, APIs, integración de sistemas y monitoreo en tiempo real)."
+      ],
+      "missingGaps": [
+        "Falta de experiencia visible en GenAI (RAG, embeddings, agentes autónomos, frameworks como LangChain o LlamaIndex) y MLOps (versionado con MLflow, monitoreo de drift). Debe defenderse destacando su capacidad de consumir APIs de LLMs, modularizar pipelines en Python y su rápido aprendizaje técnico.",
+        "Poco énfasis en cloud GCP (su experiencia se apoya principalmente en AWS y servidores Linux/Nginx). Se puede mitigar demostrando que los conceptos de servicios gestionados, contenedores e infraestructura cloud son extrapolables entre proveedores.",
+        "Ausencia de proyectos explícitos con datos industriales/forestales o GIS. Debe apalancarse en su experiencia procesando señales y telemetría deportiva en condiciones de terreno."
+      ],
+      "recommendedProjects": [
+        {
+          "projectName": "Sabotajecronos (Ecosistema UHF y Telemetría en Tiempo Real)",
+          "whyRelevant": "Demuestra capacidad de trabajar con hardware en terreno, captura de eventos no estructurados/físicos y procesamiento de flujos de datos en tiempo real bajo condiciones de operación reales, muy afín a las operaciones forestales.",
+          "talkingPoint": "Explicar cómo se diseñó la arquitectura para capturar, validar e ingestar eventos de chips UHF sin pérdida de datos en entornos dinámicos, conectando el procesamiento local con servicios backend."
+        },
+        {
+          "projectName": "Sistema KPI Empresarial en MyProt LLC",
+          "whyRelevant": "Evidencia trabajo con pipelines de datos, agregaciones complejas y almacenamiento analítico en Amazon Redshift y PostgreSQL, la base necesaria para nutrir modelos de IA.",
+          "talkingPoint": "Detallar el flujo de transformación de datos operacionales en métricas de toma de decisiones y cómo se estructuraron las consultas para optimizar tiempos de respuesta."
+        }
+      ],
+      "reverseInterviewQuestions": [
+        {
+          "category": "technical",
+          "question": "¿Cuál es el stack actual para el ciclo de vida de IA en la subgerencia (orquestación con Airflow/n8n, vector databases, MLOps) y qué tan madura está la infraestructura para conectar los modelos con SAP o sistemas GIS?",
+          "whyAskThis": "Demuestra comprensión del ciclo completo de ingeniería de datos e IA más allá del modelado aislado, evaluando la deuda técnica del área."
+        },
+        {
+          "category": "culture",
+          "question": "¿Cómo es la dinámica de interacción entre el equipo de IA y los operadores o jefes de faena en terreno al levantar requerimientos y validar la adopción de los asistentes o modelos?",
+          "whyAskThis": "Evalúa el grado de empatía operacional del postulante y revela si las soluciones realmente se adoptan en faena o se quedan en fase piloto."
+        },
+        {
+          "category": "strategy",
+          "question": "Dentro del plan de Mejora Continua, ¿cuál es el caso de uso prioritario para este año: optimización de rutas y abastecimiento, o asistentes técnicos GenAI para mantenimiento en planta?",
+          "whyAskThis": "Muestra visión estratégica orientada al retorno de inversión y ayuda a entender dónde se medirá el éxito del postulante durante los primeros 90 días."
+        }
+      ],
+      "atsKeywords": {
+        "criticalMatches": [
+          "Python",
+          "PostgreSQL",
+          "SQL",
+          "Ingeniería",
+          "APIs",
+          "Monitoreo en tiempo real",
+          "Metodologías ágiles",
+          "Jira"
+        ],
+        "missingKeywords": [
+          "Machine Learning",
+          "Deep Learning",
+          "GenAI",
+          "RAG",
+          "LLMs",
+          "Embeddings",
+          "Agentes inteligentes",
+          "MLOps",
+          "Google Cloud Platform (GCP)",
+          "GIS",
+          "Airflow",
+          "n8n"
+        ],
+        "suggestedAdditions": [
+          "Pipelines de datos end-to-end",
+          "Arquitectura RAG (Retrieval-Augmented Generation)",
+          "Vector Stores (pgvector / Pinecone)",
+          "Integración de LLMs (OpenAI API / Claude / Gemini)",
+          "Orquestación y automatización de datos",
+          "Despliegue y containerización (Docker, GCP Vertex AI)"
+        ]
+      },
+      "tailoredStrategy": {
+        "approachAdvice": "Enfocar el CV y la carta de presentación bajo el rol de 'Ingeniero de Software e Integración de IA'. Destaca tu dominio de Python y bases de datos, mostrando que un modelo predictivo o RAG solo aporta valor si está integrado de forma robusta, segura y escalable a los sistemas empresariales de ARAUCO. Antes de postular, crea y vincula en tu GitHub un prototipo funcional de RAG utilizando Python, LangChain, PostgreSQL (pgvector) y FastAPI.",
+        "interviewWarningAreas": [
+          "Te pedirán explicar a nivel de código y arquitectura cómo diseñarías un pipeline RAG para consultar manuales técnicos o bitácoras forestales en PDF, mitigando alucinaciones y controlando costos de tokens.",
+          "Te cuestionarán sobre la diferencia entre métricas de ingeniería de software (latencia, uptime) versus métricas de IA (Precision, Recall, ROC-AUC, BLEU/ROUGE) y cómo monitorear el Data Drift en terreno."
+        ],
+        "salaryRangeAdvice": "Para un rol de Ingeniero de Desarrollo IA Semi-Senior en Concepción / Región del Biobío dentro de una gran empresa industrial como ARAUCO, el rango de mercado oscila entre $2.000.000 y $2.600.000 CLP líquidos mensuales, más beneficios corporativos."
+      },
+      "modelUsed": "gemini-3.8-flash"
+    },
+    "createdAt": "2026-10-26T21:36:50.655Z",
+    "updatedAt": "2026-10-26T21:41:05.919Z",
+    "tailoredResume": {
+      "targetedRole": "Ingeniero de Desarrollo IA y Soluciones de Datos",
+      "language": "es",
+      "professionalSummary": "Ingeniero en Informática con sólida trayectoria en desarrollo de software full stack, arquitectura de datos y procesamiento de telemetría y flujos en tiempo real. Especializado en Python, bases de datos analíticas (PostgreSQL, Amazon Redshift) y automatización de procesos operacionales. Destaco por diseñar arquitecturas escalables, integrar pipelines de ingesta e implementar soluciones tecnológicas orientadas a la optimización, trazabilidad y toma de decisiones basada en datos.",
+      "highlightedSkills": [
+        "Python avanzado (Certificación Académica en Análisis y Python)",
+        "Bases de Datos Relacionales y Data Warehousing (PostgreSQL, Amazon Redshift, MySQL, MariaDB)",
+        "Ingesta y Procesamiento de Datos de Terreno / Telemetría en Tiempo Real (Chips UHF / Sensores)",
+        "Diseño e Integración de APIs REST y Microservicios",
+        "Automatización de Pipelines y Procesos Operativos (Scripts, Nextcloud)",
+        "Cloud Computing & Despliegue (AWS EC2, RDS, Route 53, Nginx)",
+        "Conceptos de MLOps, Versionado y Calidad de Datos",
+        "Desarrollo Full Stack (React.js, Next.js, Node.js, Express.js)",
+        "Metodologías Ágiles (Scrum, Sprints, Jira)"
+      ],
+      "customExperience": [
+        {
+          "company": "Sabotajecronos",
+          "role": "Fundador & Desarrollador Principal de Soluciones",
+          "period": "Abril 2023 - Actualidad",
+          "bulletPoints": [
+            "Diseñé e implementé la arquitectura end-to-end de un sistema de telemetría y captura de datos en terreno mediante tecnología UHF, procesando flujos de información en tiempo real para cientos de lecturas concurrentes sin pérdida de paquetes.",
+            "Desarrollé la ingesta, validación y sincronización de datos entre aplicaciones de escritorio, móviles y almacenamiento centralizado, garantizando trazabilidad y latencia mínima.",
+            "Estructuré modelos de bases de datos relacionales optimizados para consultas analíticas instantáneas de rendimiento y clasificación, mejorando la disponibilidad operativa en terreno a un 99.9%."
+          ]
+        },
+        {
+          "company": "MyProt LLC",
+          "role": "Full Stack & Data Solutions Developer Freelance",
+          "period": "Enero 2026 - Mayo 2026",
+          "bulletPoints": [
+            "Desarrollé e integré módulos full stack para un sistema corporativo de KPIs operacionales utilizando Next.js, PostgreSQL y Amazon Redshift para la agregación de métricas de negocio a gran escala.",
+            "Optimicé pipelines de consulta y modelado de datos en Amazon Redshift y PostgreSQL, reduciendo tiempos de carga en dashboards de visualización de indicadores críticos.",
+            "Gestioné y prioricé tareas de desarrollo y corrección de incidencias bajo metodología Scrum utilizando Jira, asegurando entregas ágiles y alineadas a los objetivos del cliente."
+          ]
+        },
+        {
+          "company": "El Refugio Ingeniería y Construcción SPA",
+          "role": "Líder de Proyecto & Desarrollador Full Stack",
+          "period": "Octubre 2023 - Febrero 2024",
+          "bulletPoints": [
+            "Lideré el desarrollo y despliegue de una plataforma web para el monitoreo y seguimiento de proyectos de ingeniería en tiempo real, facilitando la toma de decisiones basada en avance operacional.",
+            "Coordiné equipos multidisciplinarios bajo marco de trabajo ágil (Sprints), logrando el 100% de los entregables de hitos dentro del cronograma previsto.",
+            "Aseguré la escalabilidad del sistema implementando buenas prácticas de seguridad, arquitectura desacoplada y monitoreo de estado de la aplicación."
+          ]
+        },
+        {
+          "company": "IP Virginio Gómez",
+          "role": "Desarrollador de Automatización & Soporte",
+          "period": "Marzo 2025 - Junio 2025",
+          "bulletPoints": [
+            "Automaticé tareas rutinarias de mantenimiento y preparación de entornos tecnológicos mediante scripts (.bat), reduciendo el tiempo de configuración manual en más de un 60%.",
+            "Diseñé e implementé un sistema interno de bitácora digital para el registro estructurado de incidencias, trazabilidad y control de recursos operativos.",
+            "Integré la solución con Nextcloud en servidores locales, asegurando el almacenamiento seguro, gobernanza de datos y accesibilidad controlada para los usuarios."
+          ]
+        },
+        {
+          "company": "Sentinel Care",
+          "role": "Full Stack Developer",
+          "period": "Marzo 2024 - Septiembre 2024",
+          "bulletPoints": [
+            "Diseñé arquitecturas de bases de datos seguras y robustas junto a APIs de backend orientadas al consumo eficiente de datos desde el cliente.",
+            "Traduje requerimientos complejos de operación en componentes de software escalables priorizando rendimiento y experiencia de usuario."
+          ]
+        },
+        {
+          "company": "Qualitat",
+          "role": "Practicante de Desarrollo Web",
+          "period": "Enero 2022 - Febrero 2022",
+          "bulletPoints": [
+            "Implementé rutinas de depuración, limpieza y normalización de registros históricos en bases de datos relacionales, optimizando los tiempos de respuesta del sistema.",
+            "Integré interfaces en Angular con servicios RESTful, validando la integridad del intercambio de datos."
+          ]
+        }
+      ],
+      "relevantProjects": [
+        {
+          "name": "Sabotajecronos - Plataforma de Telemetría y Análisis en Tiempo Real",
+          "bulletPoints": [
+            "Ecosistema unificado (Desktop, Mobile, Web) para captura y análisis de métricas en eventos deportivos de alta exigencia.",
+            "Pipeline de datos desde hardware de lectura UHF hasta base de datos centralizada, permitiendo reporting instantáneo y cálculo de métricas de desempeño."
+          ]
+        },
+        {
+          "name": "Sistema de Analítica de KPIs Operacionales (MyProt LLC)",
+          "bulletPoints": [
+            "Integración de Data Warehouse en Amazon Redshift con PostgreSQL para análisis y reporting multidimensional de métricas corporativas.",
+            "Automatización de flujos de ingesta y visualización reactiva para la toma de decisiones directivas."
+          ]
+        }
+      ],
+      "markdownResume": "# Diego Sagredo\n**Ingeniero en Informática | Full Stack & Data Solutions Developer**  \nConcepción / Biobío, Chile | sagredodhiego@gmail.com | +569 9172 5001  \n[LinkedIn](https://www.linkedin.com/in/diego-sagredo/) | [GitHub](https://github.com/DiegoSagredo911) | [Portafolio](https://diego-sagredo.vercel.app/)\n\n---\n\n### RESUMEN PROFESIONAL\nIngeniero en Informática con sólida trayectoria en desarrollo de software, modelado de bases de datos relacionales y distribuidas (PostgreSQL, Amazon Redshift), y procesamiento de telemetría y flujos de datos en tiempo real (sensores UHF). Especializado en Python, automatización de pipelines y diseño de sistemas escalables. Orientado a la mejora continua, gobernanza de datos e integración de soluciones basadas en Inteligencia Artificial y analítica predictiva para transformar datos de operaciones y terreno en ventajas productivas medibles.\n\n---\n\n### HABILIDADES Y COMPETENCIAS TÉCNICAS\n* **Lenguajes y Herramientas Core:** Python (Certificado), JavaScript, TypeScript, C#, Java, PHP, Shell/Batch Scripting.\n* **Bases de Datos & Data Warehousing:** PostgreSQL, Amazon Redshift, MySQL, MariaDB, MongoDB, Modelado E-R, Normalización y Optimización de Consultas.\n* **Ingeniería de Software & Arquitectura:** Diseño de APIs REST, Integración de Telemetría/IoT (UHF), Microservicios, MVC, Socket.io.\n* **Cloud & Despliegue:** AWS (EC2, RDS, Route 53), Nginx, Nextcloud, Nociones de MLOps (versionado, monitoreo, trazabilidad).\n* **Metodologías & Procesos:** Scrum, Sprints, Jira, Mejora Continua, Control de Versiones (Git/GitHub), Licencia Clase B.\n\n---\n\n### EXPERIENCIA LABORAL\n\n**Sabotajecronos** | Chile  \n*Fundador & Desarrollador Principal de Soluciones* | Abril 2023 – Actualidad  \n* Diseñé e implementé la arquitectura integral para captura y procesamiento de telemetría en tiempo real mediante tecnología UHF, gestionando cientos de lecturas concurrentes sin pérdida de información.\n* Construí un pipeline de datos end-to-end conectando software de lectura de hardware, sincronización móvil y almacenamiento central en base de datos para visualización inmediata.\n* Modelé bases de datos estructuradas enfocadas en analítica de tiempos y métricas de desempeño operacional, logrando una tasa de disponibilidad operativa del 99.9% en terreno.\n\n**MyProt LLC** | Remoto  \n*Full Stack & Data Solutions Developer Freelance* | Enero 2026 – Mayo 2026  \n* Diseñé e implementé funcionalidades clave para un sistema de KPIs empresariales utilizando Next.js, PostgreSQL y Amazon Redshift.\n* Optimicé consultas analíticas complejas en data warehouse (Redshift), agilizando los tiempos de respuesta de tableros de control ejecutivos.\n* Participé activamente en la resolución de requerimientos y despliegues incrementales mediante Jira y metodologías ágiles.\n\n**El Refugio Ingeniería y Construcción SPA** | Chile  \n*Líder de Proyecto & Desarrollador Full Stack* | Octubre 2023 – Febrero 2024  \n* Lideré el desarrollo y puesta en marcha de un sistema web para el monitoreo y seguimiento en tiempo real de proyectos de ingeniería y faenas.\n* Coordiné las fases de desarrollo aplicando sprints ágiles, garantizando la entrega oportuna de los módulos de control operacional.\n* Implementé mecanismos de trazabilidad y escalabilidad para la gestión documental y métricas de avance de obra.\n\n**IP Virginio Gómez** | Concepción, Chile  \n*Desarrollador de Automatización & Soporte de Infraestructura* | Marzo 2025 – Junio 2025  \n* Desarrollé scripts en .bat para la automatización de procesos de mantenimiento y despliegue en estaciones de trabajo, reduciendo tiempos manuales en más de un 60%.\n* Creé un sistema de bitácora operacional para el registro y auditoría de incidencias técnicas.\n* Gestioné la integración con servidores locales Nextcloud, garantizando protocolos de almacenamiento seguro y gobernanza de datos.\n\n**Sentinel Care** | Remoto  \n*Full Stack Developer* | Marzo 2024 – Septiembre 2024  \n* Estructuré la base de datos relacional y las interfaces de conexión mediante APIs REST bajo estándares de seguridad y alta eficiencia.\n* Contribuí al diseño funcional enfocado en la usabilidad de usuarios operativos y administrativos.\n\n**Qualitat** | Chile  \n*Practicante de Desarrollo Web* | Enero 2022 – Febrero 2022  \n* Ejecuté tareas de depuración, limpieza y normalización de bases de datos para garantizar la integridad y rendimiento de los registros.\n\n---\n\n### PROYECTOS DESTACADOS\n\n* **Sabotajecronos (Plataforma Multiplataforma de Telemetría):** Solución completa que integra ingesta de hardware UHF, software local y plataforma cloud para la clasificación, optimización de tiempos y analítica de desempeño en vivo.\n* **Módulo de KPIs Operacionales (Amazon Redshift + PostgreSQL):** Pipeline de centralización y explotación analítica de indicadores clave para toma de decisiones tácticas.\n\n---\n\n### EDUCACIÓN\n\n* **Ingeniería en Informática** | Instituto Profesional Dr. Virginio Gómez (2023 – 2025)\n* **Técnico Analista Programador** | Instituto Profesional Dr. Virginio Gómez (2020 – 2022)\n\n---\n\n### CERTIFICACIONES\n\n* **Certificación Académica en Programación, Análisis y Python** – IP Dr. Virginio Gómez (2021 – 2022)\n* **Cybersecurity Essentials** – Cisco Networking Academy (2024)\n* **Curso de Ciberseguridad** – IP Dr. Virginio Gómez (2022)\n* **Lidera a Toda Velocidad: Lecciones de la Formula 1®** – Formula 1® (2025)"
+    }
+  }
+]

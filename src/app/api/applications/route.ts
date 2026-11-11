@@ -29,7 +29,11 @@ export async function POST(req: Request) {
     if (!body.id) {
       body.id = "app-" + Date.now();
     }
-    await saveApplication(body);
+    try {
+      await saveApplication(body);
+    } catch {
+      // Browser handles storage on Vercel
+    }
     return NextResponse.json({ success: true, application: body });
   } catch (error: unknown) {
     return NextResponse.json(

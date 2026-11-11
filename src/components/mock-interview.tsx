@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { InterviewMessage } from "@/types/advisor";
 import { useProfile } from "@/context/profile-context";
+import { getApplicationById, saveApplication } from "@/lib/storage/local-database";
 import {
   Send,
   Bot,
@@ -378,6 +379,7 @@ export function MockInterview({
 
       const { data } = await axios.post("/api/advisor/interview", {
         profileSlug: activeSlug,
+        profile: activeProfile,
         jobContext,
         chatHistory,
         candidateAnswer: answer,
@@ -390,6 +392,15 @@ export function MockInterview({
           ...prev.filter((m) => m.id !== tempUserMsg.id),
           ...data.messages,
         ]);
+
+        if (applicationId) {
+          const app = getApplicationById(applicationId);
+          if (app) {
+            app.interviewMessages = app.interviewMessages || [];
+            app.interviewMessages.push(...data.messages);
+            saveApplication(app);
+          }
+        }
 
         if (data.messages && data.messages.length > 0) {
           const candMsg = data.messages.find((msg: any) => msg.sender === "candidate");

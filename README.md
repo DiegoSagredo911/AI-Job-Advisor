@@ -88,9 +88,10 @@ flowchart TD
   * **Brechas Críticas & Cómo Mitigarlas:** Cómo justificar requisitos que no cumples al 100%.
   * **Matriz de Palabras Clave ATS:** Términos indispensables y sugeridos para tu CV.
 
-### 4. ⚡ Cascada Automática de Modelos Gemini Flash (Tolerancia a Fallos)
-* **Alta Disponibilidad sin Interrupciones:** Si una versión de Gemini alcanza límite de cuota o saturación (`429 Too Many Requests` o `RESOURCE_EXHAUSTED`), el sistema rota automáticamente en milisegundos:
-  $$\text{gemini-3.8-flash} \longrightarrow \text{gemini-3.7-flash} \longrightarrow \text{gemini-3.6-flash} \longrightarrow \text{gemini-3.5-flash} \longrightarrow \text{versiones estables}$$
+### 4. ⚡ Detección Dinámica de Modelos Gemini & Cascada Automática (Tolerancia a Fallos)
+* **Consulta en Vivo a la API:** El sistema consulta dinámicamente el listado oficial actualizado de modelos disponibles en Google Gemini mediante `models.list()`, priorizando los modelos Flash y de última generación.
+* **Alta Disponibilidad sin Interrupciones:** Si una versión de Gemini alcanza límite de cuota o saturación (`429 Too Many Requests`, `RESOURCE_EXHAUSTED` o `503`), el sistema rota automáticamente en milisegundos a través de los modelos disponibles:
+  $$\text{Modelo Preferido / Dinámico} \longrightarrow \text{Gemini 2.5 Flash} \longrightarrow \text{Gemini 2.0 Flash} \longrightarrow \text{Gemini 1.5 Flash / Pro}$$
 * Indicador visual en pantalla que transparenta qué modelo procesó la solicitud.
 
 ### 5. 🧠 Memoria Persistente Criptográfica (0 Tokens en Re-análisis)

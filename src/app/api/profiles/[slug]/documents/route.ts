@@ -1,28 +1,12 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-import { listProfileDocuments } from "@/lib/profiles";
+import { ProfileDocument } from "@/types/profile";
 
-interface RouteParams {
-  params: Promise<{ slug: string }>;
+export async function GET() {
+  return NextResponse.json({ success: true, documents: [] });
 }
 
-export async function GET(req: Request, { params }: RouteParams) {
+export async function POST(req: Request) {
   try {
-    const { slug } = await params;
-    const docs = await listProfileDocuments(slug);
-    return NextResponse.json({ success: true, documents: docs });
-  } catch (error: unknown) {
-    return NextResponse.json(
-      { success: false, error: (error as Error).message },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: Request, { params }: RouteParams) {
-  try {
-    const { slug } = await params;
     const formData = await req.formData();
     const files = formData.getAll("files") as File[];
 
@@ -33,23 +17,40 @@ export async function POST(req: Request, { params }: RouteParams) {
       );
     }
 
-    const docsDir = path.join(process.cwd(), "data", "profiles", slug, "documents");
-    await fs.mkdir(docsDir, { recursive: true });
-
-    const savedFiles: string[] = [];
+    const uploadedDocs: ProfileDocument[] = [];
 
     for (const file of files) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const targetPath = path.join(docsDir, safeName);
-      await fs.writeFile(targetPath, buffer);
-      savedFiles.push(safeName);
+      let extractedText = "";
+      const isPdf = safeName.toLowerCase().endsWith(".pdf");
+
+      try {
+        if (isPdf) {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const pdfParse = require("pdf-parse");
+          const parsed = await pdfParse(buffer);
+          extractedText = parsed.text;
+        } else {
+          extractedText = buffer.toString("utf-8");
+        }
+      } catch (err) {
+        console.warn(`Could not parse text from ${safeName}:`, err);
+      }
+
+      uploadedDocs.push({
+        name: safeName,
+        size: file.size,
+        modifiedAt: new Date().toISOString(),
+        extractedText,
+      });
     }
 
     return NextResponse.json({
       success: true,
-      message: `${savedFiles.length} archivo(s) guardado(s) exitosamente`,
-      files: savedFiles,
+      message: `${uploadedDocs.length} archivo(s) procesado(s) y guardado(s) en tu navegador`,
+      documents: uploadedDocs,
+      files: uploadedDocs.map((d) => d.name),
     });
   } catch (error: unknown) {
     return NextResponse.json(

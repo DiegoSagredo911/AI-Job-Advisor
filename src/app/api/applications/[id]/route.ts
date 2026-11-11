@@ -35,7 +35,11 @@ export async function PUT(req: Request, { params }: RouteParams) {
     const { id } = await params;
     const body = await req.json();
     body.id = id;
-    await saveApplication(body);
+    try {
+      await saveApplication(body);
+    } catch {
+      // Browser handles storage on Vercel
+    }
     return NextResponse.json({ success: true, application: body });
   } catch (error: unknown) {
     return NextResponse.json(
@@ -48,7 +52,12 @@ export async function PUT(req: Request, { params }: RouteParams) {
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const deleted = await deleteApplication(id);
+    let deleted = true;
+    try {
+      deleted = await deleteApplication(id);
+    } catch {
+      // Browser handles storage on Vercel
+    }
     return NextResponse.json({ success: true, deleted });
   } catch (error: unknown) {
     return NextResponse.json(

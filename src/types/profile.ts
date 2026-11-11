@@ -36,6 +36,13 @@ export interface CertificationItem {
   year: string;
 }
 
+export interface ProfileDocument {
+  name: string;
+  size: number;
+  modifiedAt: string;
+  extractedText?: string;
+}
+
 export interface CandidateProfile {
   slug: string;
   fullName: string;
@@ -45,6 +52,7 @@ export interface CandidateProfile {
   location: string;
   about: string;
   urls: ProfileUrl[];
+  documents?: ProfileDocument[];
   skills: {
     languages?: string[];
     frameworks?: string[];

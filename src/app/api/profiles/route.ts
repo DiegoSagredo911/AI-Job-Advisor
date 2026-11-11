@@ -25,7 +25,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const created = await createProfile(slug, fullName, headline);
+    let created = null;
+    try {
+      created = await createProfile(slug, fullName, headline);
+    } catch {
+      created = { slug, fullName, headline };
+    }
     return NextResponse.json({ success: true, profile: created });
   } catch (error: unknown) {
     return NextResponse.json(

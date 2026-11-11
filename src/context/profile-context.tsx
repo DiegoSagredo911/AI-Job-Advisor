@@ -2,6 +2,16 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { CandidateProfile, ProfileMetadata } from "@/types/profile";
+import {
+  getAllProfiles,
+  getProfilesMetadata,
+  getProfileBySlug,
+  saveProfile,
+  deleteProfile,
+  initLocalStorageIfEmpty,
+  DEFAULT_INITIAL_PROFILE,
+  ACTIVE_SLUG_KEY,
+} from "@/lib/storage/local-database";
 
 interface ProfileContextType {
   activeSlug: string;
@@ -11,9 +21,9 @@ interface ProfileContextType {
   isLoading: boolean;
   refreshProfiles: () => Promise<void>;
   reloadActiveProfile: () => Promise<void>;
+  updateCurrentProfile: (profile: CandidateProfile) => void;
+  removeProfile: (slug: string) => boolean;
 }
-
-import axios from "axios";
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
@@ -23,49 +33,71 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [activeProfile, setActiveProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const fetchProfiles = async () => {
+  const refreshProfiles = async () => {
     try {
-      const { data } = await axios.get("/api/profiles");
-      if (data.success && data.profiles) {
-        setProfiles(data.profiles);
-      }
+      const list = getProfilesMetadata();
+      setProfiles(list);
     } catch (err) {
-      console.error("Error fetching profiles with axios:", err);
+      console.error("Error refreshing profiles from local database:", err);
     }
   };
 
   const fetchActiveProfile = async (slug: string) => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(`/api/profiles/${slug}`);
-      if (data.success && data.profile) {
-        setActiveProfile(data.profile);
+      let prof = getProfileBySlug(slug);
+      if (!prof) {
+        prof = DEFAULT_INITIAL_PROFILE;
       }
+      setActiveProfile(prof);
     } catch (err) {
-      console.error(`Error fetching profile ${slug} with axios:`, err);
+      console.error(`Error fetching profile ${slug} from local database:`, err);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("activeProfileSlug") : null;
-    const initialSlug = (saved && saved !== "diego-sagredo") ? saved : "mi-perfil";
-    setActiveSlugState(initialSlug);
-    fetchProfiles();
-    fetchActiveProfile(initialSlug);
+    const init = async () => {
+      await initLocalStorageIfEmpty();
+      const saved = typeof window !== "undefined" ? localStorage.getItem(ACTIVE_SLUG_KEY) : null;
+      const initialSlug = saved && saved !== "diego-sagredo" ? saved : "mi-perfil";
+      setActiveSlugState(initialSlug);
+      await refreshProfiles();
+      await fetchActiveProfile(initialSlug);
+    };
+
+    init();
   }, []);
 
   const setActiveSlug = (slug: string) => {
     setActiveSlugState(slug);
     if (typeof window !== "undefined") {
-      localStorage.setItem("activeProfileSlug", slug);
+      localStorage.setItem(ACTIVE_SLUG_KEY, slug);
     }
     fetchActiveProfile(slug);
   };
 
   const reloadActiveProfile = async () => {
     await fetchActiveProfile(activeSlug);
+  };
+
+  const updateCurrentProfile = (profile: CandidateProfile) => {
+    const saved = saveProfile(profile);
+    setActiveProfile(saved);
+    refreshProfiles();
+  };
+
+  const removeProfile = (slug: string): boolean => {
+    const success = deleteProfile(slug);
+    if (success) {
+      const remaining = getProfilesMetadata();
+      setProfiles(remaining);
+      if (activeSlug === slug && remaining.length > 0) {
+        setActiveSlug(remaining[0].slug);
+      }
+    }
+    return success;
   };
 
   return (
@@ -76,8 +108,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         profiles,
         activeProfile,
         isLoading,
-        refreshProfiles: fetchProfiles,
+        refreshProfiles,
         reloadActiveProfile,
+        updateCurrentProfile,
+        removeProfile,
       }}
     >
       {children}
