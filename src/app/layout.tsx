@@ -12,10 +12,103 @@ export const viewport: Viewport = {
   themeColor: "#090a0f",
 };
 
-export const metadata: Metadata = {
-  title: "AI Job Advisor | Asesor Inteligente de Postulaciones",
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ai-job-advisor.com";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "AI Job Advisor",
+  alternateName: ["Asesor Inteligente de Postulaciones", "AI Job Copilot"],
   description:
-    "Plataforma inteligente para análisis de vacantes, calce técnico ATS, personalización de CVs y simulador de entrevistas técnicas para profesionales de cualquier disciplina.",
+    "Plataforma inteligente universal para análisis de vacantes, calce técnico ATS, personalización de CVs a formato Harvard en Word (.docx) y simulador de entrevistas con IA por voz.",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "All",
+  inLanguage: "es",
+  isAccessibleForFree: true,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  author: {
+    "@type": "Person",
+    name: "Diego Ignacio Sagredo Ailef",
+    url: "https://www.linkedin.com/in/diego-sagredo/",
+  },
+  featureList: [
+    "Simulador de entrevistas técnicas con voz en tiempo real",
+    "Análisis de compatibilidad y filtros ATS",
+    "Generador y exportador de currículum formato Harvard en Word (.docx)",
+    "Redacción automática de cartas de presentación y cold pitch",
+    "Cascada de tolerancia a fallos con modelos Google Gemini Flash",
+    "Memoria local persistente SHA-256",
+  ],
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "AI Job Advisor | Asesor Inteligente de Postulaciones y Carrera con IA",
+    template: "%s | AI Job Advisor",
+  },
+  description:
+    "Optimiza tu CV a formato Harvard en Word (.docx), evalúa vacantes contra filtros ATS, redacta cartas persuasivas y practica entrevistas técnicas con IA por voz.",
+  keywords: [
+    "asesor de empleo ia",
+    "simulador de entrevistas con ia",
+    "analizador de cv ats",
+    "curriculum vitae formato harvard word docx",
+    "optimizador de postulaciones laborales",
+    "match score cv vacante",
+    "simulador de entrevistas tecnicas con voz",
+    "google gemini job advisor",
+    "preparador de entrevistas de trabajo",
+    "redactor de cartas de presentacion ia",
+    "ats resume checker gratis",
+    "postulaciones laborales ia",
+    "job interview simulator ai",
+    "harvard resume generator",
+  ],
+  authors: [
+    {
+      name: "Diego Ignacio Sagredo Ailef",
+      url: "https://www.linkedin.com/in/diego-sagredo/",
+    },
+  ],
+  creator: "Diego Ignacio Sagredo Ailef",
+  publisher: "Diego Ignacio Sagredo Ailef",
+  applicationName: "AI Job Advisor",
+  category: "technology",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_CL",
+    alternateLocale: ["es_ES", "en_US"],
+    url: siteUrl,
+    siteName: "AI Job Advisor",
+    title: "AI Job Advisor | Copiloto Inteligente de Postulaciones y Carrera",
+    description:
+      "Optimiza tu CV a formato Harvard (.docx), supera filtros ATS y practica entrevistas técnicas con voz impulsado por Google Gemini.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Job Advisor | Asesor Inteligente de Carrera con IA",
+    description:
+      "Optimiza tu CV a formato Harvard en Word, supera filtros ATS y simula entrevistas con voz real.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/icon",
     shortcut: "/icon",
@@ -30,6 +123,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="dark overflow-x-hidden">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased selection:bg-blue-600 selection:text-white max-w-[100vw] overflow-x-hidden">
         <ApiKeyProvider>
           <ProfileProvider>
