@@ -110,9 +110,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/icon",
-    shortcut: "/icon",
-    apple: "/icon",
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 };
 
