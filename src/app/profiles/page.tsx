@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useProfile } from "@/context/profile-context";
+import { useApiKey } from "@/context/api-key-context";
 import { ProfileUrl } from "@/types/profile";
 import {
   User,
@@ -38,6 +39,7 @@ export default function ProfilesPage() {
     reloadActiveProfile,
     updateCurrentProfile,
   } = useProfile();
+  const { hasKey, setIsModalOpen, model, fallbackModel } = useApiKey();
 
   const [documents, setDocuments] = useState<ProfileDocument[]>([]);
   const [urls, setUrls] = useState<ProfileUrl[]>([]);
@@ -194,6 +196,10 @@ export default function ProfilesPage() {
 
   const handleIngestWithAI = async () => {
     if (isIngesting || !activeProfile) return;
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
     setIsIngesting(true);
     setIngestStatus("Analizando documentos y URLs con IA...");
 
@@ -206,6 +212,8 @@ export default function ProfilesPage() {
         profile: activeProfile,
         documentsText: aggregatedText,
         urls: activeProfile.urls,
+        model,
+        fallbackModel,
       });
       if (data.success && data.profile) {
         setIngestStatus("¡Perfil consolidado exitosamente en tu navegador!");
@@ -214,8 +222,11 @@ export default function ProfilesPage() {
       } else {
         setIngestStatus(data.error || "No se pudo consolidar el perfil");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error ingesting profile with axios:", err);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      }
       setIngestStatus("Error de conexión al procesar con IA");
     } finally {
       setIsIngesting(false);

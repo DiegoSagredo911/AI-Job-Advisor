@@ -44,10 +44,39 @@ export async function POST(req: Request) {
       );
     }
 
+    const apiKey =
+      req.headers.get("x-gemini-api-key") ||
+      body.apiKey ||
+      process.env.GEMINI_API_KEY ||
+      undefined;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Por favor configura tu Gemini API Key en el menú superior para generar el mensaje de contacto.",
+        },
+        { status: 401 }
+      );
+    }
+
+    const chosenModel =
+      req.headers.get("x-gemini-preferred-model") ||
+      body.model ||
+      body.preferredModel ||
+      undefined;
+
+    const fallbackModel =
+      req.headers.get("x-gemini-fallback-model") ||
+      body.fallbackModel ||
+      undefined;
+
     const outreachPitch = await generateOutreach(
       profile,
       jobDesc,
-      model || preferredModel
+      chosenModel,
+      apiKey,
+      fallbackModel
     );
 
     if (application) {

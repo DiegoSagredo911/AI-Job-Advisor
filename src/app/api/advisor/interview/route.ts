@@ -33,12 +33,41 @@ export async function POST(req: Request) {
       );
     }
 
+    const apiKey =
+      req.headers.get("x-gemini-api-key") ||
+      body.apiKey ||
+      process.env.GEMINI_API_KEY ||
+      undefined;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Por favor configura tu Gemini API Key en el menú superior para simular la entrevista.",
+        },
+        { status: 401 }
+      );
+    }
+
+    const chosenModel =
+      req.headers.get("x-gemini-preferred-model") ||
+      body.model ||
+      body.preferredModel ||
+      undefined;
+
+    const fallbackModel =
+      req.headers.get("x-gemini-fallback-model") ||
+      body.fallbackModel ||
+      undefined;
+
     const result = await evaluateInterviewStep(
       profile,
       jobContext || "Vacante Full Stack Developer",
       chatHistory,
       candidateAnswer,
-      model || preferredModel
+      chosenModel,
+      apiKey,
+      fallbackModel
     );
 
     const userMessage: InterviewMessage = {

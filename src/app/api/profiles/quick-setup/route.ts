@@ -76,12 +76,34 @@ export async function POST(req: Request) {
       accumulatedText = `Nombre: ${fullName}\nRol: ${headline}\n`;
     }
 
+    const apiKey =
+      req.headers.get("x-gemini-api-key") ||
+      (formData.get("apiKey") as string) ||
+      process.env.GEMINI_API_KEY ||
+      undefined;
+
+    const chosenModel =
+      req.headers.get("x-gemini-preferred-model") ||
+      (formData.get("model") as string) ||
+      undefined;
+
+    const fallbackModel =
+      req.headers.get("x-gemini-fallback-model") ||
+      (formData.get("fallbackModel") as string) ||
+      undefined;
+
     // Run AI Ingestion
     const urlStrings = urls.map((u) => `${u.label}: ${u.url}`);
     let structuredProfile: CandidateProfile;
 
     try {
-      structuredProfile = await ingestProfileFromRawData(accumulatedText, urlStrings);
+      structuredProfile = await ingestProfileFromRawData(
+        accumulatedText,
+        urlStrings,
+        chosenModel,
+        apiKey,
+        fallbackModel
+      );
       structuredProfile.slug = slug;
       structuredProfile.fullName = fullName || structuredProfile.fullName;
       if (headline && headline !== "Profesional TI") {

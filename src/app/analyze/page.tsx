@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useProfile } from "@/context/profile-context";
+import { useApiKey } from "@/context/api-key-context";
 import { JobAnalysisResult, TailoredResume, OutreachPitch, JobApplication } from "@/types/advisor";
 import { MatchScoreCard } from "@/components/match-score-card";
 import { ResumeViewer } from "@/components/resume-viewer";
@@ -23,6 +24,7 @@ import {
 
 export default function AnalyzePage() {
   const { activeSlug, activeProfile } = useProfile();
+  const { hasKey, setIsModalOpen, model, fallbackModel } = useApiKey();
   const [jobText, setJobText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<JobAnalysisResult | null>(null);
@@ -69,6 +71,10 @@ Requisitos:
 
   const handleAnalyze = async () => {
     if (!jobText.trim() || isAnalyzing) return;
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
     setIsAnalyzing(true);
     setAnalysis(null);
     setResume(null);
@@ -81,6 +87,8 @@ Requisitos:
         profileSlug: activeSlug,
         profile: activeProfile,
         rawJobDescription: jobText,
+        model,
+        fallbackModel,
         saveAsApplication: false,
       });
 
@@ -105,7 +113,11 @@ Requisitos:
       }
     } catch (err: unknown) {
       console.error("Error analyzing job with axios:", err);
-      alert("Error de conexión al procesar la oferta.");
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      } else {
+        alert("Error de conexión al procesar la oferta.");
+      }
     } finally {
       setIsAnalyzing(false);
     }
@@ -113,6 +125,10 @@ Requisitos:
 
   const handleGenerateResume = async () => {
     if (resume || loadingResume) return;
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
     setLoadingResume(true);
     try {
       const { data } = await axios.post("/api/advisor/tailor-resume", {
@@ -120,6 +136,8 @@ Requisitos:
         profile: activeProfile,
         rawJobDescription: jobText,
         applicationId: savedAppId,
+        model,
+        fallbackModel,
       });
       if (data.success && data.tailoredResume) {
         setResume(data.tailoredResume);
@@ -131,8 +149,11 @@ Requisitos:
           }
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error tailoring resume with axios:", err);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      }
     } finally {
       setLoadingResume(false);
     }
@@ -140,6 +161,10 @@ Requisitos:
 
   const handleGenerateOutreach = async () => {
     if (outreach || loadingOutreach) return;
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
     setLoadingOutreach(true);
     try {
       const { data } = await axios.post("/api/advisor/outreach", {
@@ -147,6 +172,8 @@ Requisitos:
         profile: activeProfile,
         rawJobDescription: jobText,
         applicationId: savedAppId,
+        model,
+        fallbackModel,
       });
       if (data.success && data.outreachPitch) {
         setOutreach(data.outreachPitch);
@@ -158,8 +185,11 @@ Requisitos:
           }
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error generating outreach with axios:", err);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      }
     } finally {
       setLoadingOutreach(false);
     }

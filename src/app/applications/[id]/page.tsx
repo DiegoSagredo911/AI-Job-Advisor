@@ -21,6 +21,7 @@ import {
 import { formatDate } from "@/lib/utils";
 import axios from "axios";
 import { useProfile } from "@/context/profile-context";
+import { useApiKey } from "@/context/api-key-context";
 import {
   getApplicationById,
   saveApplication,
@@ -35,6 +36,7 @@ export default function ApplicationDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
   const { activeProfile } = useProfile();
+  const { hasKey, setIsModalOpen, model, fallbackModel } = useApiKey();
   const [app, setApp] = useState<JobApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"analysis" | "resume" | "outreach" | "interview">("analysis");
@@ -89,6 +91,10 @@ export default function ApplicationDetailPage({ params }: PageProps) {
 
   const handleGenerateResume = async () => {
     if (!app || app.tailoredResume || loadingResume) return;
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
     setLoadingResume(true);
     try {
       const { data } = await axios.post("/api/advisor/tailor-resume", {
@@ -96,14 +102,19 @@ export default function ApplicationDetailPage({ params }: PageProps) {
         profile: activeProfile,
         rawJobDescription: app.rawJobDescription,
         applicationId: app.id,
+        model,
+        fallbackModel,
       });
       if (data.success && data.tailoredResume) {
         const updated = { ...app, tailoredResume: data.tailoredResume };
         saveApplication(updated);
         setApp(updated);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error tailoring resume with axios:", err);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      }
     } finally {
       setLoadingResume(false);
     }
@@ -111,6 +122,10 @@ export default function ApplicationDetailPage({ params }: PageProps) {
 
   const handleGenerateOutreach = async () => {
     if (!app || app.outreachPitch || loadingOutreach) return;
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
     setLoadingOutreach(true);
     try {
       const { data } = await axios.post("/api/advisor/outreach", {
@@ -118,14 +133,19 @@ export default function ApplicationDetailPage({ params }: PageProps) {
         profile: activeProfile,
         rawJobDescription: app.rawJobDescription,
         applicationId: app.id,
+        model,
+        fallbackModel,
       });
       if (data.success && data.outreachPitch) {
         const updated = { ...app, outreachPitch: data.outreachPitch };
         saveApplication(updated);
         setApp(updated);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error generating outreach with axios:", err);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      }
     } finally {
       setLoadingOutreach(false);
     }

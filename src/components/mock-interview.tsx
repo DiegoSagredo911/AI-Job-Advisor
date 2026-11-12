@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { InterviewMessage } from "@/types/advisor";
 import { useProfile } from "@/context/profile-context";
+import { useApiKey } from "@/context/api-key-context";
 import { getApplicationById, saveApplication } from "@/lib/storage/local-database";
 import {
   Send,
@@ -34,6 +35,7 @@ export function MockInterview({
   initialMessages,
 }: MockInterviewProps) {
   const { activeSlug, activeProfile } = useProfile();
+  const { hasKey, setIsModalOpen, model, fallbackModel } = useApiKey();
   const [jobContext, setJobContext] = useState(initialJobContext);
 
   // Auto-detección de idioma inicial (Inglés vs Español)
@@ -92,10 +94,20 @@ export function MockInterview({
   };
 
   const storageKey = `ai_job_advisor_mock_interview_${activeSlug || "mi-perfil"}`;
+  const [restoredKey, setRestoredKey] = useState<string | null>(null);
+
+  // Sincronizar contexto cuando se cargue el perfil activo
+  useEffect(() => {
+    if (initialJobContext && initialJobContext !== "Entrevista Profesional & Especialidad") {
+      setJobContext(initialJobContext);
+    }
+  }, [initialJobContext]);
 
   // Cargar sesión persistente al montar el componente (para que nunca se pierda el chat)
   useEffect(() => {
-    if (typeof window !== "undefined" && !applicationId && (!initialMessages || initialMessages.length === 0)) {
+    if (typeof window === "undefined") return;
+
+    if (!applicationId && (!initialMessages || initialMessages.length === 0)) {
       try {
         const saved = localStorage.getItem(storageKey);
         if (saved) {
@@ -111,11 +123,20 @@ export function MockInterview({
       } catch (e) {
         console.warn("Failed to restore saved interview", e);
       }
+    } else if (applicationId && initialMessages && initialMessages.length > 0) {
+      setMessages(initialMessages);
     }
-  }, [activeSlug, applicationId, storageKey, initialMessages]);
+
+    setRestoredKey(storageKey);
+  }, [storageKey, applicationId]);
 
   // Guardar automáticamente cada nuevo mensaje en disco (localStorage)
   useEffect(() => {
+    // CRUCIAL: No guardar hasta que este storageKey específico haya sido restaurado
+    if (restoredKey !== storageKey) {
+      return;
+    }
+
     if (typeof window !== "undefined" && !applicationId && messages.length > 0) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(messages));
@@ -124,7 +145,7 @@ export function MockInterview({
         console.warn("Failed to save interview to localStorage", e);
       }
     }
-  }, [messages, interviewLanguage, activeSlug, applicationId, storageKey]);
+  }, [messages, interviewLanguage, applicationId, storageKey, restoredKey]);
 
   // Refs for Web Speech & Gemini Audio playback
   const recognitionRef = useRef<any>(null);
@@ -143,9 +164,13 @@ export function MockInterview({
   // Initialize Speech Recognition & Synthesis check
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // TTS check
+      // TTS check & pre-warm voices
       if ("speechSynthesis" in window) {
         setSpeechSupported(true);
+        window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.getVoices();
+        };
       }
 
       // STT check (Web Speech API)
@@ -156,21 +181,20 @@ export function MockInterview({
         setSpeechRecognitionSupported(true);
         const recog = new SpeechRecognition();
         recog.continuous = true;
-        recog.interimResults = true;
+        recog.interimResults = false;
         recog.lang = interviewLanguage === "en" ? "en-US" : "es-ES";
 
         recog.onresult = (event: any) => {
-          let transcript = "";
+          let recognizedText = "";
           for (let i = event.resultIndex; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              recognizedText += event.results[i][0].transcript;
+            }
           }
-          if (transcript) {
+          if (recognizedText.trim()) {
             setInputValue((prev) => {
-              // Si ya había texto, concatena limpiamente
-              if (prev.endsWith(" ") || prev === "") {
-                return prev + transcript;
-              }
-              return prev + " " + transcript;
+              const cleanPrev = prev.trim();
+              return cleanPrev ? `${cleanPrev} ${recognizedText.trim()}` : recognizedText.trim();
             });
           }
         };
@@ -200,6 +224,13 @@ export function MockInterview({
       }
     };
   }, []);
+
+  // Sincronizar idioma del reconocedor cuando cambie interviewLanguage
+  useEffect(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.lang = interviewLanguage === "en" ? "en-US" : "es-ES";
+    }
+  }, [interviewLanguage]);
 
   const stopSpeaking = () => {
     if (typeof window !== "undefined") {
@@ -322,37 +353,35 @@ export function MockInterview({
     }
   };
 
-  // Push-to-Talk Handlers (Presionar para hablar, soltar para terminar)
-  const handleStartPushToTalk = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    if (!speechRecognitionSupported || !recognitionRef.current || isListening) return;
+  const handleToggleListening = () => {
+    if (!speechRecognitionSupported || !recognitionRef.current) return;
 
-    // Detener la voz del entrevistador si aún está hablando para que no se interfiera
-    stopSpeaking();
-
-    try {
-      recognitionRef.current.start();
-      setIsListening(true);
-    } catch (err) {
-      console.warn("Speech recognition start issue:", err);
-    }
-  };
-
-  const handleStopPushToTalk = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    if (!recognitionRef.current || !isListening) return;
-
-    try {
-      recognitionRef.current.stop();
+    if (isListening) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.warn("Speech recognition stop issue:", err);
+      }
       setIsListening(false);
-    } catch (err) {
-      console.warn("Speech recognition stop issue:", err);
+    } else {
+      stopSpeaking();
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.warn("Speech recognition start issue:", err);
+      }
     }
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!inputValue.trim() || isSending) return;
+
+    if (!hasKey) {
+      setIsModalOpen(true);
+      return;
+    }
 
     const answer = inputValue.trim();
     setInputValue("");
@@ -384,20 +413,32 @@ export function MockInterview({
         chatHistory,
         candidateAnswer: answer,
         applicationId,
+        model,
+        fallbackModel,
       });
 
       if (data.success && data.messages) {
         // Reemplazar mensaje temporal con la evaluación del entrevistador
-        setMessages((prev) => [
-          ...prev.filter((m) => m.id !== tempUserMsg.id),
+        const updatedMessages = [
+          ...messages.filter((m) => m.id !== tempUserMsg.id),
           ...data.messages,
-        ]);
+        ];
+        setMessages(updatedMessages);
+
+        // Guardado inmediato y explícito en localStorage para blindar contra recargas
+        if (!applicationId && typeof window !== "undefined") {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
+            localStorage.setItem(`${storageKey}_lang`, interviewLanguage);
+          } catch (e) {
+            console.warn("Failed immediate save to localStorage:", e);
+          }
+        }
 
         if (applicationId) {
           const app = getApplicationById(applicationId);
           if (app) {
-            app.interviewMessages = app.interviewMessages || [];
-            app.interviewMessages.push(...data.messages);
+            app.interviewMessages = updatedMessages;
             saveApplication(app);
           }
         }
@@ -417,8 +458,11 @@ export function MockInterview({
           speakText(data.interviewerReply);
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error in mock interview step with axios:", err);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setIsModalOpen(true);
+      }
     } finally {
       setIsSending(false);
     }
@@ -434,18 +478,31 @@ export function MockInterview({
   const handleResetInterview = () => {
     if (window.confirm("¿Deseas reiniciar la simulación de entrevista? La IA olvidará el diálogo actual y comenzará una nueva sesión desde cero.")) {
       stopSpeaking();
-      if (typeof window !== "undefined" && !applicationId) {
-        localStorage.removeItem(storageKey);
+      const freshWelcome: InterviewMessage = {
+        id: "msg-welcome-" + Date.now(),
+        sender: "interviewer",
+        content: getWelcomeMessageContent(interviewLanguage),
+        timestamp: new Date().toISOString(),
+      };
+
+      if (typeof window !== "undefined") {
+        if (!applicationId) {
+          localStorage.setItem(storageKey, JSON.stringify([freshWelcome]));
+          localStorage.setItem(`${storageKey}_lang`, interviewLanguage);
+        } else {
+          try {
+            const app = getApplicationById(applicationId);
+            if (app) {
+              app.interviewMessages = [freshWelcome];
+              saveApplication(app);
+            }
+          } catch (e) {
+            console.warn("Error resetting application interview:", e);
+          }
+        }
       }
       setExpandedFeedbackIds({});
-      setMessages([
-        {
-          id: "msg-welcome-" + Date.now(),
-          sender: "interviewer",
-          content: getWelcomeMessageContent(interviewLanguage),
-          timestamp: new Date().toISOString(),
-        },
-      ]);
+      setMessages([freshWelcome]);
       setInputValue("");
     }
   };
@@ -811,42 +868,40 @@ export function MockInterview({
               handleSubmit();
             }
           }}
-          placeholder="Escribe tu respuesta técnica o mantén presionado el micrófono para hablar..."
+          placeholder="Escribe tu respuesta técnica o pulsa el micrófono para dictar por voz..."
           rows={2}
           className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
         />
 
         <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto min-w-0">
-          {/* Push-to-Talk Button (MANTENER PRESIONADO PARA HABLAR) */}
+          {/* Toggle Speech Recognition Button */}
           <button
             type="button"
-            onMouseDown={handleStartPushToTalk}
-            onMouseUp={handleStopPushToTalk}
-            onTouchStart={handleStartPushToTalk}
-            onTouchEnd={handleStopPushToTalk}
-            onTouchCancel={handleStopPushToTalk}
+            onClick={handleToggleListening}
             disabled={!speechRecognitionSupported}
             title={
               speechRecognitionSupported
-                ? "Mantén presionado para hablar (Push-to-Talk)"
+                ? isListening
+                  ? "Haz clic para detener el dictado"
+                  : "Haz clic para comenzar a dictar por voz"
                 : "Reconocimiento de voz no soportado en este navegador"
             }
             className={`flex-1 sm:flex-none justify-center px-3 sm:px-3.5 py-2.5 sm:py-3 rounded-2xl font-semibold text-xs flex items-center gap-1.5 sm:gap-2 select-none transition-all shadow-md active:scale-95 disabled:opacity-40 ${
               isListening
-                ? "bg-red-600 text-white ring-4 ring-red-500/30 animate-pulse"
+                ? "bg-red-600 hover:bg-red-500 text-white ring-4 ring-red-500/30 animate-pulse"
                 : "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
             }`}
           >
             {isListening ? (
               <>
                 <Mic className="w-4 h-4 text-white animate-bounce" />
-                <span className="font-bold">¡Soltar!</span>
+                <span className="font-bold">Detener</span>
               </>
             ) : (
               <>
                 <Mic className="w-4 h-4 text-blue-400" />
-                <span className="hidden sm:inline">Mantener para Hablar</span>
-                <span className="sm:hidden">Hablar</span>
+                <span className="hidden sm:inline">Dictar por Voz</span>
+                <span className="sm:hidden">Dictar</span>
               </>
             )}
           </button>

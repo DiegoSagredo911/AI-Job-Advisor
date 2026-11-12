@@ -5,11 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ProfileSwitcher } from "./profile-switcher";
 import { QuickSetupModal } from "./quick-setup-modal";
-import { Sparkles, Briefcase, FileSearch, MessageSquareCode, UserCog, Search } from "lucide-react";
+import { ApiKeyModal } from "./api-key-modal";
+import { useApiKey } from "@/context/api-key-context";
+import { Sparkles, Briefcase, FileSearch, MessageSquareCode, UserCog, Search, KeyRound } from "lucide-react";
 
 export function NavigationBar() {
   const pathname = usePathname();
   const [isSetupOpen, setIsSetupOpen] = useState(false);
+  const { hasKey, setIsModalOpen } = useApiKey();
 
   const navItems = [
     { href: "/", label: "Mis Postulaciones", shortLabel: "Inicio", icon: Briefcase },
@@ -63,9 +66,30 @@ export function NavigationBar() {
 
           {/* Header Actions */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Gemini API Key Button / Status */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                hasKey
+                  ? "bg-emerald-950/40 border-emerald-700/60 text-emerald-300 hover:bg-emerald-900/50"
+                  : "bg-amber-950/40 border-amber-600/70 text-amber-300 animate-pulse hover:bg-amber-900/50"
+              }`}
+              title={hasKey ? "Gemini API Key activa en tu navegador" : "Configurar Gemini API Key (Requerida para IA)"}
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                {hasKey ? "API Key Activa" : "Configurar API Key"}
+              </span>
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  hasKey ? "bg-emerald-400" : "bg-amber-400"
+                }`}
+              />
+            </button>
+
             <button
               onClick={() => setIsSetupOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors shadow-sm"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors shadow-sm"
               title="Cargar tu CV y datos personales"
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -107,6 +131,8 @@ export function NavigationBar() {
           );
         })}
       </nav>
+
+      <ApiKeyModal />
 
       <QuickSetupModal
         isOpen={isSetupOpen}

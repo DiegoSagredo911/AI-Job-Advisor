@@ -45,11 +45,16 @@ export async function POST(req: Request) {
       );
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey =
+      req.headers.get("x-gemini-api-key") ||
+      process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { success: false, error: "GEMINI_API_KEY no configurada." },
-        { status: 400 }
+        {
+          success: false,
+          error: "Por favor configura tu Gemini API Key en el menú superior para usar voz Gemini.",
+        },
+        { status: 401 }
       );
     }
 

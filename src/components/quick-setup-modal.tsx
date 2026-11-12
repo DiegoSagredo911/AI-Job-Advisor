@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useProfile } from "@/context/profile-context";
+import { useApiKey } from "@/context/api-key-context";
 import { saveProfile } from "@/lib/storage/local-database";
 import {
   UserPlus,
@@ -23,6 +24,7 @@ interface QuickSetupModalProps {
 
 export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
   const { setActiveSlug, refreshProfiles } = useProfile();
+  const { apiKey, model, fallbackModel } = useApiKey();
   const [mounted, setMounted] = useState(false);
 
   const [fullName, setFullName] = useState("");
@@ -84,6 +86,15 @@ export function QuickSetupModal({ isOpen, onClose }: QuickSetupModalProps) {
 
     for (const file of selectedFiles) {
       formData.append("cvFiles", file);
+    }
+    if (apiKey) {
+      formData.append("apiKey", apiKey);
+    }
+    if (model) {
+      formData.append("model", model);
+    }
+    if (fallbackModel) {
+      formData.append("fallbackModel", fallbackModel);
     }
 
     try {

@@ -34,9 +34,42 @@ export async function POST(req: Request, { params }: RouteParams) {
       );
     }
 
+    const apiKey =
+      req.headers.get("x-gemini-api-key") ||
+      body?.apiKey ||
+      process.env.GEMINI_API_KEY ||
+      undefined;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Por favor configura tu Gemini API Key en el menú superior para consolidar tu perfil con IA.",
+        },
+        { status: 401 }
+      );
+    }
+
+    const chosenModel =
+      req.headers.get("x-gemini-preferred-model") ||
+      body?.model ||
+      body?.preferredModel ||
+      undefined;
+
+    const fallbackModel =
+      req.headers.get("x-gemini-fallback-model") ||
+      body?.fallbackModel ||
+      undefined;
+
     const urlStrings = urls.map((u: any) => `${u.label}: ${u.url} (${u.description || ""})`);
 
-    const updatedProfile = await ingestProfileFromRawData(aggregatedText, urlStrings);
+    const updatedProfile = await ingestProfileFromRawData(
+      aggregatedText,
+      urlStrings,
+      chosenModel,
+      apiKey,
+      fallbackModel
+    );
 
     // Retain slug, documents and merge URLs
     updatedProfile.slug = slug || existing.slug || "mi-perfil";

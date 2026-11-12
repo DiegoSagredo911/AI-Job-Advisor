@@ -168,12 +168,13 @@ export interface GeminiCallOutput {
 async function callGeminiWithCascade(
   prompt: string,
   preferredModel?: string,
-  customApiKey?: string
+  customApiKey?: string,
+  fallbackModel?: string
 ): Promise<GeminiCallOutput> {
   const apiKey = customApiKey || getApiKey();
   if (!apiKey) {
     throw new Error(
-      "GEMINI_API_KEY no encontrada. Por favor configura GEMINI_API_KEY en tu entorno o archivo .env.local"
+      "GEMINI_API_KEY no encontrada. Por favor ingresa tu API Key en la barra superior para continuar."
     );
   }
 
@@ -187,10 +188,16 @@ async function callGeminiWithCascade(
   const envModel = process.env.GEMINI_MODEL;
   const initialModel = preferredModel || envModel || dynamicModelIds[0] || "gemini-2.5-flash";
 
-  // 3. Armamos la lista ordenada de modelos iniciando con el preferido
+  // 3. Armamos la lista ordenada de modelos:
+  // 1º Modelo preferido elegido por el usuario
+  // 2º Modelo de fallback/respaldo elegido por el usuario
+  // 3º Resto de modelos dinámicos disponibles en su cuenta
   const modelsToTry: string[] = [];
   if (initialModel) {
     modelsToTry.push(initialModel);
+  }
+  if (fallbackModel && !modelsToTry.includes(fallbackModel)) {
+    modelsToTry.push(fallbackModel);
   }
   for (const mId of dynamicModelIds) {
     if (!modelsToTry.includes(mId)) {
@@ -246,7 +253,7 @@ async function callGeminiWithCascade(
         if (nextModel) {
           const reason = isRateLimitOrQuota ? "LÍMITE DE CUOTA / RATE LIMIT (429)" : "MODELO NO DISPONIBLE";
           console.warn(
-            `⚠️ [Gemini Auto-Fallback] ${reason} detectado en '${currentModel}'. Saltando automáticamente a '${nextModel}'... (Detalle: ${errMsg.slice(0, 100)})`
+            `⚠️ [Gemini Auto-Fallback] ${reason} detectado en '${currentModel}'. Saltando automáticamente al modelo de respaldo '${nextModel}'... (Detalle: ${errMsg.slice(0, 100)})`
           );
           continue; // Intenta con el siguiente modelo de la cascada
         }
@@ -271,12 +278,14 @@ async function callGeminiWithCascade(
 export async function analyzeJobOffer(
   profile: CandidateProfile,
   rawJobDescription: string,
-  preferredModel?: string
+  preferredModel?: string,
+  customApiKey?: string,
+  fallbackModel?: string
 ): Promise<JobAnalysisResult> {
   const prompt = buildJobAnalysisPrompt(profile, rawJobDescription);
 
   try {
-    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel);
+    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel, customApiKey, fallbackModel);
     const parsed = JSON.parse(text) as JobAnalysisResult;
     parsed.modelUsed = modelUsed;
     return parsed;
@@ -290,12 +299,14 @@ export async function analyzeJobOffer(
 export async function generateTailoredResume(
   profile: CandidateProfile,
   rawJobDescription: string,
-  preferredModel?: string
+  preferredModel?: string,
+  customApiKey?: string,
+  fallbackModel?: string
 ): Promise<TailoredResume> {
   const prompt = buildTailorResumePrompt(profile, rawJobDescription);
 
   try {
-    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel);
+    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel, customApiKey, fallbackModel);
     const parsed = JSON.parse(text) as TailoredResume;
     return parsed;
   } catch (err: unknown) {
@@ -308,12 +319,14 @@ export async function generateTailoredResume(
 export async function generateOutreach(
   profile: CandidateProfile,
   rawJobDescription: string,
-  preferredModel?: string
+  preferredModel?: string,
+  customApiKey?: string,
+  fallbackModel?: string
 ): Promise<OutreachPitch> {
   const prompt = buildOutreachPrompt(profile, rawJobDescription);
 
   try {
-    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel);
+    const { text, modelUsed } = await callGeminiWithCascade(prompt, preferredModel, customApiKey, fallbackModel);
     const parsed = JSON.parse(text) as OutreachPitch;
     return parsed;
   } catch (err: unknown) {
@@ -328,7 +341,9 @@ export async function evaluateInterviewStep(
   jobContext: string,
   chatHistory: { role: string; content: string }[],
   candidateAnswer: string,
-  preferredModel?: string
+  preferredModel?: string,
+  customApiKey?: string,
+  fallbackModel?: string
 ): Promise<{
   interviewerReply: string;
   feedback: NonNullable<InterviewMessage["feedback"]>;
@@ -336,7 +351,7 @@ export async function evaluateInterviewStep(
   const prompt = buildInterviewFeedbackPrompt(profile, jobContext, chatHistory, candidateAnswer);
 
   try {
-    const { text } = await callGeminiWithCascade(prompt, preferredModel);
+    const { text } = await callGeminiWithCascade(prompt, preferredModel, customApiKey, fallbackModel);
     const parsed = JSON.parse(text);
     return parsed;
   } catch (err: unknown) {
@@ -363,12 +378,14 @@ export async function evaluateInterviewStep(
 export async function ingestProfileFromRawData(
   rawText: string,
   urls: string[],
-  preferredModel?: string
+  preferredModel?: string,
+  customApiKey?: string,
+  fallbackModel?: string
 ): Promise<CandidateProfile> {
   const prompt = buildProfileIngestionPrompt(rawText, urls);
 
   try {
-    const { text } = await callGeminiWithCascade(prompt, preferredModel);
+    const { text } = await callGeminiWithCascade(prompt, preferredModel, customApiKey, fallbackModel);
     const parsed = JSON.parse(text) as CandidateProfile;
     parsed.updatedAt = new Date().toISOString();
     return parsed;
